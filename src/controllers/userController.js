@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const { generateToken } = require("../utils/tokenManager.js");
 const bcryp = require("bcrypt");
 
-
 const getAllUser = async (req, res, next) => {
     try {
         const user = await userService.getAllUser();
@@ -23,7 +22,6 @@ const getUserById = async (req, res, next) => {
         next(error);
     }
 }
-
 
 const createUser = async (req, res, next) => {
     const {
@@ -111,7 +109,7 @@ const login = async (req, res, next) => {
             ok: false,
             data: null,
             authenticated,
-            mensaje: "Usuario o clave incorrectos"
+            mensage: "Usuario o clave incorrectos"
         })
 
     } catch (error) {
