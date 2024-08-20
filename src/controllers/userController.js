@@ -111,7 +111,7 @@ const login = async (req, res, next) => {
             ok: false,
             data: null,
             authenticated,
-            mensaje: "Usuario o clave incorrectos"
+            mensage: "Usuario o clave incorrectos"
         })
 
     } catch (error) {
