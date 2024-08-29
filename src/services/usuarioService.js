@@ -1,4 +1,4 @@
-const userRepository = require('../repositories/userRepository');
+const userRepository = require('../repositories/usuarioRepository');
 const { generateToken } = require('../utils/tokenManager');
 const bcryp = require("bcrypt");
 
@@ -24,6 +24,16 @@ const getUserById = async (id) => {
 
 const createUser = async (data) => {
     try {
+        const { usuario } = data;
+
+        // Verificar si el nombre de usuario ya existe
+        const existingUser = await userRepository.login(usuario);
+
+        if (existingUser) {
+            // Si el usuario ya existe, retornar un mensaje o lanzar un error
+            return { success: false, message: "El nombre de usuario ya existe" };
+        }
+        
         const user = await userRepository.createUser(data);
         return (user) ? user : [];
     } catch (error) {
@@ -56,21 +66,29 @@ const deleteUser = async (id) => {
 
 const login = async (data, res) => {
     try {
+
         const {
-            nombre,
-            pass
+            usuario,
+            pass,
         } = data
 
-        const user = await userRepository.login(nombre)
+        const user = await userRepository.login(usuario)
 
         if (user) {
             const isSame = await bcryp.compare(pass, user.pass)
             if (isSame) {
+
                 const { token, expiresIn } = generateToken(user.id)
+
                 let userData = {
-                    nombre: nombre,
+                    id: user.id,
+                    nombres: user.nombres,
+                    usuario: user.usuario,
+                    idrol: user.idrol
                 }
+
                 const authenticated = true;
+
                 return {
                     authenticated,
                     userData,
