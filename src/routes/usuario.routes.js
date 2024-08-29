@@ -1,6 +1,6 @@
 const express = require('express');
 
-const UserController = require('../controllers/userController');
+const UserController = require('../controllers/usuarioController');
 
 const { verifyToken } = require("../middleware/index");
 

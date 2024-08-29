@@ -1,4 +1,4 @@
-const userService = require('../services/userService');
+const userService = require('../services/usuarioService.js');
 const jwt = require("jsonwebtoken");
 const { generateToken } = require("../utils/tokenManager.js");
 const bcryp = require("bcrypt");
@@ -25,13 +25,19 @@ const getUserById = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
     const {
-        nombre,
+        nombres,
+        usuario,
         pass,
+        idrol,
+        estado
     } = req.body;
 
     const data = {
-        nombre,
+        nombres,
+        usuario,
         pass: await bcryp.hash(pass, 10),
+        idrol,
+        estado
     }
 
     try {
@@ -46,13 +52,19 @@ const updateUser = async (req, res, next) => {
     const id = req.params.id;
 
     const {
-        nombre,
+        nombres,
+        usuario,
         pass,
+        idrol,
+        estado
     } = req.body;
 
     const data = {
-        nombre,
-        pass,
+        nombres,
+        usuario,
+        pass: await bcryp.hash(pass, 10),
+        idrol,
+        estado
     }
 
     try {
@@ -78,12 +90,12 @@ const deleteUser = async (req, res, next) => {
 const login = async (req, res, next) => {
     try {
         const {
-            nombre,
+            usuario,
             pass
         } = req.body
 
         const data = {
-            nombre,
+            usuario,
             pass
         }
 
