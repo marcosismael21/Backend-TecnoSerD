@@ -1,5 +1,5 @@
 const db = require('../models');
-const User = db.user;
+const User = db.Usuario;
 
 //funciones para la creacion de usuarios
 
@@ -63,11 +63,11 @@ const deleteUser = async (id) => {
 
 //funciones para login
 
-const login = async (nombre) => {
+const login = async (usuario) => {
     try {
         const user = await User.findOne({
             where: {
-                nombre: nombre,
+                usuario: usuario,
             }
         });
         return user;
