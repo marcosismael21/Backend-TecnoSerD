@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const db = require("../models");
-const User = db.user; // Asegúrate de que el nombre coincide con el definido en tu modelo
+const User = db.Usuario; // Asegúrate de que el nombre coincide con el definido en tu modelo
 const { tokenVerificationError } = require("../utils/tokenManager");
 
 const verifyToken = async (req, res, next) => {
