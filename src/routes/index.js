@@ -8,6 +8,7 @@ const publicidadRegaliaRoutes = require('./publicidadRegalia.routes')
 const rolRoutes = require('./rol.routes')
 const comodinRoutes = require('./comodin.routes')
 const rolUsuarioRoutes = require('./rolUsuario.routes')
+const servicioRoutes = require('./servicio.routes')
 
 
 //establecer las rutas web
@@ -16,6 +17,7 @@ router.use('/api/v1/rol', rolRoutes);
 router.use('/api/v1/pubreg', publicidadRegaliaRoutes)
 router.use('/api/v1/comodin', comodinRoutes)
 router.use('/api/v1/rolusuario', rolUsuarioRoutes)
+router.use('/api/v1/servicio', servicioRoutes)
 
 //la exportacion
 
