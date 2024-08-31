@@ -1,4 +1,4 @@
-const db = require("../models")
+const db = require('../models')
 const Publicidad_Regalia = db.Publicidad_Regalia
 
 const getAllPublicidad_Regalia = async () =>{

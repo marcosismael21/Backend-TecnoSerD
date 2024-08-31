@@ -1,4 +1,4 @@
-const publicidadRegaliaRepository = require("../repositories/publicidadRegaliaRepository")
+const publicidadRegaliaRepository = require('../repositories/publicidadRegaliaRepository')
 
 const getAllPublicidad_Regalia = async () => {
     try {
