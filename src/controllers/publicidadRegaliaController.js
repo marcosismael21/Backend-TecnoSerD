@@ -1,4 +1,4 @@
-const publicidadRegaliaService = require("../services/publicidadRegaliaService")
+const publicidadRegaliaService = require('../services/publicidadRegaliaService')
 
 const getAllPublicidad_Regalia = async (req, res, next) => {
     try {
