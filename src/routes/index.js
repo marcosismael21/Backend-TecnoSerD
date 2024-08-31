@@ -10,6 +10,7 @@ const comodinRoutes = require('./comodin.routes')
 const rolUsuarioRoutes = require('./rolUsuario.routes')
 const servicioRoutes = require('./servicio.routes')
 const proveedorRoutes = require('./proveedor.routes')
+const tipoEquipoRoutes = require('./tipoEquipo.routes')
 
 //establecer las rutas web
 router.use('/api/v1/usuario', authRoutes);
@@ -19,6 +20,7 @@ router.use('/api/v1/comodin', comodinRoutes)
 router.use('/api/v1/rolusuario', rolUsuarioRoutes)
 router.use('/api/v1/servicio', servicioRoutes)
 router.use('/api/v1/proveedor', proveedorRoutes);
+router.use('/api/v1/tipoequipo', tipoEquipoRoutes);
 
 //la exportacion
 module.exports = router;
