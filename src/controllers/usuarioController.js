@@ -107,6 +107,14 @@ const login = async (req, res, next) => {
         } = await userService.login(data, res)
 
         if (authenticated) {
+
+             // Establecer la cookie con el token JWT
+             res.cookie("token", token, {
+                httpOnly: true, // Para prevenir acceso al token desde JavaScript del cliente
+                secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
+                maxAge: expiresIn * 1000, // Duración en milisegundos
+            });
+
             return res.status(200).json({
                 ok: true,
                 userData: userData,
