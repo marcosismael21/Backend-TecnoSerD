@@ -11,7 +11,7 @@ const rolUsuarioRoutes = require('./rolUsuario.routes')
 const servicioRoutes = require('./servicio.routes')
 const proveedorRoutes = require('./proveedor.routes')
 const publicidadClienteRoutes = require('./publicidadCliente.routes')
-const agenteRoutes = require('./agente.routes')
+const tipoComercioRoutes = require('./tipoComercio.routes')
 const tipoEquipoRoutes = require('./tipoEquipo.routes')
 
 //establecer las rutas web
@@ -24,7 +24,7 @@ router.use('/api/v1/servicio', servicioRoutes)
 router.use('/api/v1/proveedor', proveedorRoutes);
 router.use('/api/v1/tipoequipo', tipoEquipoRoutes);
 router.use('/api/v1/pubcli', publicidadClienteRoutes)
-router.use('/api/v1/agente', agenteRoutes)
+router.use('/api/v1/tipcom', tipoComercioRoutes)
 
 //la exportacion
 module.exports = router;
