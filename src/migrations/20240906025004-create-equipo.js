@@ -2,21 +2,36 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Comodins', {
+    await queryInterface.createTable('Equipos', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      nombre: {
+      idTipoEquipo: {
+        type: Sequelize.INTEGER
+      },
+      noserie: {
         type: Sequelize.STRING
       },
-      noSerie: {
+      noimei: {
         type: Sequelize.STRING
       },
-      noImei: {
+      pin: {
         type: Sequelize.STRING
+      },
+      puk: {
+        type: Sequelize.STRING
+      },
+      fechaLlegada: {
+        type: Sequelize.DATE
+      },
+      comodin: {
+        type: Sequelize.BOOLEAN
+      },
+      estado: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -29,6 +44,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Comodins');
+    await queryInterface.dropTable('Equipos');
   }
 };
