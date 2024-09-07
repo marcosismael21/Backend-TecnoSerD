@@ -9,6 +9,8 @@ const rolRoutes = require('./rol.routes')
 const rolUsuarioRoutes = require('./rolUsuario.routes')
 const servicioRoutes = require('./servicio.routes')
 const proveedorRoutes = require('./proveedor.routes')
+const publicidadClienteRoutes = require('./publicidadCliente.routes')
+const agenteRoutes = require('./agente.routes')
 const tipoEquipoRoutes = require('./tipoEquipo.routes')
 const equipoRoutes = require('./equipo.routes')
 const asignacionRoutes = require('./asignacion.routes')
@@ -25,5 +27,8 @@ router.use('/api/v1/tipoequipo', tipoEquipoRoutes);
 router.use('/api/v1/equipo', equipoRoutes);
 router.use('/api/v1/asignacion', asignacionRoutes);
 router.use('/api/v1/asignacionTecnico', asignacionTecnicoRoutes);
+router.use('/api/v1/pubcli', publicidadClienteRoutes)
+router.use('/api/v1/agente', agenteRoutes)
+
 //la exportacion
 module.exports = router;
