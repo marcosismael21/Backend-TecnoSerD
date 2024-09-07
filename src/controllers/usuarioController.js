@@ -12,6 +12,16 @@ const getAllUser = async (req, res, next) => {
     }
 }
 
+const getAllUsersFalse = async (req, res, next) => {
+    const estado = req.params.estado
+    try {
+        const user = await userService.getAllUsersFalse(estado)
+        return res.status(200).json(user)
+    } catch (error) {
+        next(error);
+    }
+}
+
 const getUserById = async (req, res, next) => {
     const id = req.params.id;
     try {
@@ -75,6 +85,24 @@ const updateUser = async (req, res, next) => {
     }
 }
 
+const changeStatusTrue = async (req, res, next) => {
+    const id = req.params.id;
+    const {
+        estado
+    } = req.body;
+
+    const data = {
+        estado
+    }
+
+    try {
+        const user = await userService.updateUser(data, id);
+        return res.status(200).json(user);
+    } catch (error) {
+        next(error);
+    }
+}
+
 const deleteUser = async (req, res, next) => {
     const id = req.params.id;
     try {
@@ -107,6 +135,14 @@ const login = async (req, res, next) => {
         } = await userService.login(data, res)
 
         if (authenticated) {
+
+            // Establecer la cookie con el token JWT
+            res.cookie("token", token, {
+                httpOnly: true, // Para prevenir acceso al token desde JavaScript del cliente
+                secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
+                maxAge: expiresIn * 1000, // Duración en milisegundos
+            });
+
             return res.status(200).json({
                 ok: true,
                 userData: userData,
@@ -138,4 +174,6 @@ module.exports = {
     updateUser,
     deleteUser,
     login,
+    changeStatusTrue,
+    getAllUsersFalse,
 }
