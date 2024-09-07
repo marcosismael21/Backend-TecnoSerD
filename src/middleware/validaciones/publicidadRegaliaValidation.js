@@ -8,7 +8,7 @@ const publicidadValidationRules=()=>{
         body('nombre').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
             max: 255
         }).withMessage('Debe tener menos de 255 caracteres'),
-        body('idAgente').notEmpty().withMessage("El campo es obligatorio").isInt().withMessage("Debe ser un numero entero"),
+        body('idTipoComercio').notEmpty().withMessage("El campo es obligatorio").isInt().withMessage("Debe ser un numero entero"),
         body('cantidad').notEmpty().withMessage("El campo es obligatorio").isInt().withMessage("Debe ser un numero entero"),
         body('estado').notEmpty().withMessage("El campo es obligatorio").isBoolean().withMessage('Debe ser un valor boleano')
     ];
