@@ -3,12 +3,18 @@ const {
     validationResult
 } = require('express-validator');
 
-const variasValidationRules=()=>{
+const comodinValidationRules=()=>{
     return [
         body('nombre').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
             max: 255
         }).withMessage('Debe tener menos de 255 caracteres'),
-        body('estado').notEmpty().withMessage("El campo es obligatorio").isBoolean().withMessage('Debe ser un valor boleano'),
+        body('noSerie').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
+            max: 255
+        }).withMessage('Debe tener menos de 255 caracteres'),
+        body('noImei').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
+            max: 255
+        }).withMessage('Debe tener menos de 255 caracteres'),
+       
     ];
 }
 
@@ -28,6 +34,6 @@ const validate = (req, res, next) => {
 }
 
 module.exports = {
-    variasValidationRules,
+    comodinValidationRules,
     validate,
 }
