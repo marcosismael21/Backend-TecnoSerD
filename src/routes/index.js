@@ -13,6 +13,7 @@ const proveedorRoutes = require('./proveedor.routes')
 const publicidadClienteRoutes = require('./publicidadCliente.routes')
 const tipoComercioRoutes = require('./tipoComercio.routes')
 const tipoEquipoRoutes = require('./tipoEquipo.routes')
+const canalRoutes = require('./canal.routes')
 
 //establecer las rutas web
 router.use('/api/v1/usuario', authRoutes);
@@ -25,6 +26,7 @@ router.use('/api/v1/proveedor', proveedorRoutes);
 router.use('/api/v1/tipoequipo', tipoEquipoRoutes);
 router.use('/api/v1/pubcli', publicidadClienteRoutes)
 router.use('/api/v1/tipcom', tipoComercioRoutes)
+router.use('/api/v1/canal', canalRoutes)
 
 //la exportacion
 module.exports = router;
