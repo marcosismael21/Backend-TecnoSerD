@@ -12,6 +12,8 @@ const proveedorRoutes = require('./proveedor.routes')
 const publicidadClienteRoutes = require('./publicidadCliente.routes')
 const agenteRoutes = require('./agente.routes')
 const tipoEquipoRoutes = require('./tipoEquipo.routes')
+const ciudadRoutes = require('./ciudad.routes')
+const comercioRoutes = require('./comercio.routes')
 const equipoRoutes = require('./equipo.routes')
 const asignacionRoutes = require('./asignacion.routes')
 const asignacionTecnicoRoutes = require('./asignacionTecnico.routes')
@@ -29,6 +31,8 @@ router.use('/api/v1/asignacion', asignacionRoutes);
 router.use('/api/v1/asignacionTecnico', asignacionTecnicoRoutes);
 router.use('/api/v1/pubcli', publicidadClienteRoutes)
 router.use('/api/v1/agente', agenteRoutes)
+router.use('/api/v1/ciudad', ciudadRoutes)
+router.use('/api/v1/comercio', comercioRoutes)
 
 //la exportacion
 module.exports = router;
