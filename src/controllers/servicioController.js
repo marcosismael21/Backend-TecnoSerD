@@ -22,11 +22,13 @@ const getServicioById = async (req, res, next) => {
 const createServicio = async (req, res, next) => {
     const {
         nombre,
+        idcanal,
         estado
     } = req.body
 
     const data = {
         nombre,
+        idcanal,
         estado
     }
 
@@ -43,11 +45,13 @@ const updateServicio = async (req, res, next) => {
 
     const {
         nombre,
+        idcanal,
         estado
     } = req.body
 
     const data = {
         nombre,
+        idcanal,
         estado
     }
 
