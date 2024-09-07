@@ -1,5 +1,5 @@
 const db = require('../models')
-const Publicidad_Regalia = db.Publicidad_Regalia
+const Publicidad_Regalia = db.PublicidadRegalia
 
 const getAllPublicidad_Regalia = async () =>{
     try {

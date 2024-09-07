@@ -3,18 +3,13 @@ const {
     validationResult
 } = require('express-validator');
 
-const comodinValidationRules=()=>{
+const canalValidationRules=()=>{
     return [
         body('nombre').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
             max: 255
         }).withMessage('Debe tener menos de 255 caracteres'),
-        body('noSerie').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
-            max: 255
-        }).withMessage('Debe tener menos de 255 caracteres'),
-        body('noImei').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
-            max: 255
-        }).withMessage('Debe tener menos de 255 caracteres'),
-       
+        body('idTipoComercio').notEmpty().withMessage("El campo es obligatorio").isInt().withMessage("Debe ser un numero entero"),
+        body('estado').notEmpty().withMessage("El campo es obligatorio").isBoolean().withMessage('Debe ser un valor boleano'),
     ];
 }
 
@@ -34,6 +29,6 @@ const validate = (req, res, next) => {
 }
 
 module.exports = {
-    comodinValidationRules,
+    canalValidationRules,
     validate,
 }

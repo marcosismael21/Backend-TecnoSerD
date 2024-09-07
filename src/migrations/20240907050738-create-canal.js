@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Publicidad_Regalia', {
+    await queryInterface.createTable('Canals', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,10 +12,7 @@ module.exports = {
       nombre: {
         type: Sequelize.STRING
       },
-      idAgente: {
-        type: Sequelize.INTEGER
-      },
-      cantidad: {
+      idTipoComercio: {
         type: Sequelize.INTEGER
       },
       estado: {
@@ -32,6 +29,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Publicidad_Regalia');
+    await queryInterface.dropTable('Canals');
   }
 };
