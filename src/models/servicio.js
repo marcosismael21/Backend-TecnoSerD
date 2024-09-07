@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Servicio.init({
     nombre: DataTypes.STRING,
+    idcanal: DataTypes.INTEGER,
     estado: DataTypes.BOOLEAN
   }, {
     sequelize,

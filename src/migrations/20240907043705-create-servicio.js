@@ -12,6 +12,9 @@ module.exports = {
       nombre: {
         type: Sequelize.STRING
       },
+      idcanal: {
+        type: Sequelize.INTEGER
+      },
       estado: {
         type: Sequelize.BOOLEAN
       },
