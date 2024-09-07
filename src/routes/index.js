@@ -35,7 +35,6 @@ router.use('/api/v1/pubcli', publicidadClienteRoutes)
 router.use('/api/v1/tipcom', tipoComercioRoutes)
 router.use('/api/v1/canal', canalRoutes)
 router.use('/api/v1/estado', estadoRoutes)
-router.use('/api/v1/agente', agenteRoutes)
 router.use('/api/v1/ciudad', ciudadRoutes)
 router.use('/api/v1/comercio', comercioRoutes)
 
