@@ -167,6 +167,24 @@ const login = async (req, res, next) => {
 
 }
 
+const logout = async (req, res, next) => {
+    try {
+        // Eliminar la cookie con el token JWT
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
+        });
+
+        return res.status(200).json({
+            ok: true,
+            mensage: "Logout exitoso"
+        });
+    } catch (error) {
+        res.status(500).send('Error al intentar cerrar sesión: ' + error);
+        next(error);
+    }
+}
+
 module.exports = {
     getAllUser,
     getUserById,
@@ -176,4 +194,5 @@ module.exports = {
     login,
     changeStatusTrue,
     getAllUsersFalse,
+    logout
 }
