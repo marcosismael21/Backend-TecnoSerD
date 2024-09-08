@@ -14,5 +14,6 @@ router.delete('/:id', verifyToken, UserController.deleteUser);
 router.post('/login', UserController.login);
 router.patch('/:id', verifyToken, UserController.changeStatusTrue)
 router.get('/uf/:estado', verifyToken, UserController.getAllUsersFalse)
+router.post('/logout', UserController.logout)
 
 module.exports = router;
