@@ -2,26 +2,44 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Asignacions', {
+    await queryInterface.createTable('Comercios', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      idComercio: {
-        type: Sequelize.INTEGER
-      },
-      idServicio: {
-        type: Sequelize.INTEGER
-      },
-      idEquipo: {
-        type: Sequelize.INTEGER
-      },
-      tipoProblema: {
+      nombreComercio: {
         type: Sequelize.STRING
       },
-      estado: {
+      rtn: {
+        type: Sequelize.STRING
+      },
+      direccion: {
+        type: Sequelize.STRING
+      },
+      numTienda: {
+        type: Sequelize.STRING
+      },
+      nombreContacto: {
+        type: Sequelize.STRING
+      },
+      telefono: {
+        type: Sequelize.STRING
+      },
+      numUsuario: {
+        type: Sequelize.STRING
+      },
+      idCiudad: {
+        type: Sequelize.INTEGER
+      },
+      longitud: {
+        type: Sequelize.STRING
+      },
+      latitud: {
+        type: Sequelize.STRING
+      },
+      idTipoComercio: {
         type: Sequelize.INTEGER
       },
       createdAt: {
@@ -35,6 +53,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Asignacions');
+    await queryInterface.dropTable('Comercios');
   }
 };

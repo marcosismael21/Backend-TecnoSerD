@@ -12,6 +12,16 @@ const getAllUser = async (req, res, next) => {
     }
 }
 
+const getAllUsersFalse = async (req, res, next) => {
+    const estado = req.params.estado
+    try {
+        const user = await userService.getAllUsersFalse(estado)
+        return res.status(200).json(user)
+    } catch (error) {
+        next(error);
+    }
+}
+
 const getUserById = async (req, res, next) => {
     const id = req.params.id;
     try {
@@ -75,6 +85,24 @@ const updateUser = async (req, res, next) => {
     }
 }
 
+const changeStatusTrue = async (req, res, next) => {
+    const id = req.params.id;
+    const {
+        estado
+    } = req.body;
+
+    const data = {
+        estado
+    }
+
+    try {
+        const user = await userService.updateUser(data, id);
+        return res.status(200).json(user);
+    } catch (error) {
+        next(error);
+    }
+}
+
 const deleteUser = async (req, res, next) => {
     const id = req.params.id;
     try {
@@ -108,8 +136,8 @@ const login = async (req, res, next) => {
 
         if (authenticated) {
 
-             // Establecer la cookie con el token JWT
-             res.cookie("token", token, {
+            // Establecer la cookie con el token JWT
+            res.cookie("token", token, {
                 httpOnly: true, // Para prevenir acceso al token desde JavaScript del cliente
                 secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
                 maxAge: expiresIn * 1000, // Duración en milisegundos
@@ -139,6 +167,24 @@ const login = async (req, res, next) => {
 
 }
 
+const logout = async (req, res, next) => {
+    try {
+        // Eliminar la cookie con el token JWT
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
+        });
+
+        return res.status(200).json({
+            ok: true,
+            mensage: "Logout exitoso"
+        });
+    } catch (error) {
+        res.status(500).send('Error al intentar cerrar sesión: ' + error);
+        next(error);
+    }
+}
+
 module.exports = {
     getAllUser,
     getUserById,
@@ -146,4 +192,7 @@ module.exports = {
     updateUser,
     deleteUser,
     login,
+    changeStatusTrue,
+    getAllUsersFalse,
+    logout
 }
