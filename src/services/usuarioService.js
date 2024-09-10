@@ -12,6 +12,15 @@ const getAllUser = async () => {
 
 }
 
+const getAllUsersFalse = async (estado) => {
+    try {
+        const user = await userRepository.getAllUsersFalse(estado)
+        return (user) ? user : []
+    } catch (error) {
+        throw error
+    }
+}
+
 const getUserById = async (id) => {
     try {
         const user = await userRepository.getUserById(id,);
@@ -113,5 +122,5 @@ module.exports = {
     updateUser,
     deleteUser,
     login,
-
+    getAllUsersFalse
 }

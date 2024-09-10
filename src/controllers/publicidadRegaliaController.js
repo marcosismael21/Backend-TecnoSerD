@@ -22,14 +22,14 @@ const getPublicidad_RegaliaById = async (req, res, next) => {
 const createPublicidad_Regalia = async (req, res, next) => {
     const {
         nombre,
-        idAgente,
+        idTipoComercio,
         cantidad,
         estado
     } = req.body
 
     const data = {
         nombre,
-        idAgente,
+        idTipoComercio,
         cantidad,
         estado
     }
@@ -46,14 +46,14 @@ const updatePublicidad_Regalia = async (req, res, next) => {
     const id = req.params.id
     const {
         nombre,
-        idAgente,
+        idTipoComercio,
         cantidad,
         estado
     } = req.body
 
     const data = {
         nombre,
-        idAgente,
+        idTipoComercio,
         cantidad,
         estado
     }

@@ -12,6 +12,19 @@ const getAllUser = async () => {
     }
 }
 
+const getAllUsersFalse = async (estado) => {
+    try {
+        const user = await User.findAll({
+            where:{
+                estado: estado
+            }
+        })
+        return user
+    } catch (error) {
+        throw error
+    }
+}
+
 const getUserById = async (id) => {
     try {
         const user = await User.findOne({
@@ -83,4 +96,5 @@ module.exports = {
     updateUser,
     deleteUser,
     login,
+    getAllUsersFalse,
 }
