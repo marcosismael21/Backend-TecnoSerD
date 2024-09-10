@@ -1,10 +1,26 @@
 const db = require('../models')
 const TipoEquipo = db.TipoEquipo
 
+const {
+    sequelize
+} = require("../models");
+const {
+    QueryTypes,
+    Transaction
+} = require('sequelize');
+
 const getAllTipoEquipo = async () => {
     try {
-        const tipoEquipo = await TipoEquipo.findAll()
-        return tipoEquipo
+        const te= `SELECT 
+    te. *, p.nombre as idProveedor
+FROM 
+    tipoequipos te
+JOIN 
+    proveedors p ON te.idProveedor = p.id;`
+    const tipoEquipo = await sequelize.query(te, {
+        type: QueryTypes.SELECT
+    })
+    return tipoEquipo
     } catch (error) {
         throw error
     }
