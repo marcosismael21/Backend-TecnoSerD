@@ -31,9 +31,40 @@ const getAllEquipo = async () => {
 
 const getEquipoByEstado = async (estado) => {
     try {
+
+        const q = `SELECT
+	                    e.*,
+                        te.nombre as idTipoEquipo
+                       FROM
+                        equipos AS e
+                        LEFT JOIN tipoequipos AS te ON te.id = e.idTipoEquipo
+                        WHERE e.estado = :xestado AND e.comodin = false`
+
+        const equipo = await sequelize.query(q, {
+            replacements: {
+                xestado: estado
+            },
+            type: QueryTypes.SELECT
+        })
+
+        /*const equipo = await Equipo.findAll({
+            where: {
+                estado: estado,
+                comodin: false
+            }
+        })*/
+        return equipo
+    } catch (error) {
+        throw error
+    }
+}
+
+const getEquipoByComodin = async (comodin) => {
+    try {
         const equipo = await Equipo.findAll({
             where: {
-                estado: estado
+                comodin: comodin,
+                estado: true
             }
         })
         return equipo
@@ -96,5 +127,6 @@ module.exports = {
     createEquipo,
     updateEquipo,
     deleteEquipo,
-    getEquipoByEstado
+    getEquipoByEstado,
+    getEquipoByComodin
 }
