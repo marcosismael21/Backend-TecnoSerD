@@ -29,6 +29,19 @@ const getAllEquipo = async () => {
     }
 }
 
+const getEquipoByEstado = async (estado) => {
+    try {
+        const equipo = await Equipo.findAll({
+            where: {
+                estado: estado
+            }
+        })
+        return equipo
+    } catch (error) {
+        throw error
+    }
+}
+
 const getEquipoById = async (id) => {
     try {
         const equipo = await Equipo.findOne({
@@ -82,5 +95,6 @@ module.exports = {
     getEquipoById,
     createEquipo,
     updateEquipo,
-    deleteEquipo
+    deleteEquipo,
+    getEquipoByEstado
 }

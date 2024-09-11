@@ -9,6 +9,15 @@ const getAllEquipo = async () => {
     }
 }
 
+const getEquipoByEstado = async (estado) => {
+    try {
+        const equipo = await equipoRepository.getEquipoByEstado(estado)
+        return (equipo) ? equipo : []
+    } catch (error) {
+        throw error
+    }
+}
+
 const getEquipoById = async (id) => {
     try {
         const equipo = await equipoRepository.getEquipoById(id)
@@ -51,4 +60,5 @@ module.exports = {
     createEquipo,
     updateEquipo,
     deleteEquipo,
+    getEquipoByEstado
 }

@@ -11,6 +11,7 @@ router.get('/:id', verifyToken, equipoController.getEquipoById)
 router.post('/', [verifyToken, equipoValidationRules(), validate], equipoController.createEquipo)
 router.put('/:id', [verifyToken, equipoValidationRules(), validate], equipoController.updateEquipo)
 router.delete('/:id', verifyToken, equipoController.deleteEquipo)
+router.get('/es/:estado', verifyToken, equipoController.getEquipoByEstado)
 
 //la exportacion
 
