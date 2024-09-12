@@ -1,9 +1,19 @@
 const db = require('../models')
 const Publicidad_Regalia = db.PublicidadRegalia
 
+const {
+    sequelize
+} = require("../models");
+const {
+    QueryTypes
+} = require('sequelize');
+
 const getAllPublicidad_Regalia = async () =>{
     try {
-        const publicidad_regalia = await Publicidad_Regalia.findAll()
+        const sql = "SELECT pr.*, tc.nombre as idTipoComercio FROM publicidadregalia AS pr LEFT JOIN tipocomercios AS tc ON tc.id=pr.idTipoComercio;"
+        const publicidad_regalia = await sequelize.query(sql, {
+            type: QueryTypes.SELECT
+        })
         return publicidad_regalia;
     } catch (error) {
         throw error
