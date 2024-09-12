@@ -1,9 +1,19 @@
 const db = require('../models')
 const Comercio = db.Comercio
 
+const {
+    sequelize
+} = require("../models");
+const {
+    QueryTypes
+} = require('sequelize');
+
 const getAllComercio = async () => {
     try {
-        const comercio = await Comercio.findAll()
+        const sql = "SELECT co.*, ci.nombre AS idCiudad, tc.nombre AS idTipoComercio FROM comercios AS co LEFT JOIN ciudads AS ci ON ci.id = co.idCiudad LEFT JOIN tipocomercios AS tc ON tc.id = co.idTipoComercio"
+        const comercio = await sequelize.query(sql, {
+            type: QueryTypes.SELECT
+        })
         return comercio
     } catch (error) {
         throw error

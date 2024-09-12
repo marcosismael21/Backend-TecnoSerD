@@ -9,6 +9,26 @@ const getAllEquipo = async (req, res, next) => {
     }
 }
 
+const getEquipoByEstado = async (req, res, next) => {
+    const estado = req.params.estado
+    try {
+        const equipo = await equipoService.getEquipoByEstado(estado)
+        return res.status(200).json(equipo)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getEquipoByComodin = async (req, res, next) => {
+    const comodin = req.params.comodin
+    try {
+        const equipo = await equipoService.getEquipoByComodin(comodin)
+        return res.status(200).json(equipo)
+    } catch (error) {
+        next(error)
+    }
+}
+
 const getEquipoById = async (req, res, next) => {
     const id = req.params.id
     try {
@@ -29,7 +49,7 @@ const createEquipo = async (req, res, next) => {
         fechaLlegada,
         comodin,
         estado
-        
+
     } = req.body
 
     const data = {
@@ -94,10 +114,30 @@ const deleteEquipo = async (req, res, next) => {
     }
 }
 
+const changeEquipoStatus = async (req, res, next) => {
+    const id = req.params.id
+    const {
+        estado
+    } = req.body;
+
+    const data = {
+        estado
+    }
+    try {
+        const equipo = await equipoService.updateEquipo(data, id)
+        return res.status(200).json(equipo)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllEquipo,
     getEquipoById,
     createEquipo,
     updateEquipo,
-    deleteEquipo
+    deleteEquipo,
+    getEquipoByEstado,
+    getEquipoByComodin,
+    changeEquipoStatus
 }
