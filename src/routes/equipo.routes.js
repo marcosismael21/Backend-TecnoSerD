@@ -7,6 +7,8 @@ const { equipoValidationRules, validate } = require('../middleware/validaciones/
 
 // Rutas para el manejo
 router.get('/', verifyToken, equipoController.getAllEquipo)
+router.get('/cantidad', equipoController.getCantidadEquipos)
+router.get('/cantidad-estado', equipoController.getCantidadEquiposPorEstado)
 router.get('/:id', verifyToken, equipoController.getEquipoById)
 router.post('/', [verifyToken, equipoValidationRules(), validate], equipoController.createEquipo)
 router.put('/:id', [verifyToken, equipoValidationRules(), validate], equipoController.updateEquipo)

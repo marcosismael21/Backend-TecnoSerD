@@ -131,6 +131,26 @@ const changeEquipoStatus = async (req, res, next) => {
     }
 }
 
+const getCantidadEquipos = async (req, res, next) => {
+    try {
+        const equipo = await equipoService.getCantidadEquipos()
+        return res.status(200).json(equipo)
+    } catch (error) {
+        next(error)
+    }
+ 
+}
+
+const getCantidadEquiposPorEstado = async (req, res, next) => {
+    try {
+        const equipo = await equipoService.getCantidadEquiposPorEstado();
+        return res.status(200).json(equipo);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 module.exports = {
     getAllEquipo,
     getEquipoById,
@@ -139,5 +159,7 @@ module.exports = {
     deleteEquipo,
     getEquipoByEstado,
     getEquipoByComodin,
-    changeEquipoStatus
+    changeEquipoStatus,
+    getCantidadEquipos,
+    getCantidadEquiposPorEstado
 }

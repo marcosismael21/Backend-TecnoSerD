@@ -11,8 +11,8 @@ const {
 
 const getAllEquipo = async () => {
     try {
-       /* const equipo = await Equipo.findAll()
-        return equipo*/
+        /* const equipo = await Equipo.findAll()
+         return equipo*/
         const q = `SELECT
 	                    e.*,
                         te.nombre as idTipoEquipo
@@ -121,6 +121,37 @@ const deleteEquipo = async (id) => {
     }
 }
 
+const getCantidadEquipos = async () => {
+    try {
+        const q = `SELECT t.nombre AS tipoEquipo, COUNT(e.id) AS cantidad
+                    FROM equipos e
+                    LEFT JOIN tipoequipos t ON t.id=e.idTipoEquipo
+                    GROUP BY t.nombre;`
+
+        const equipo = await sequelize.query(q, {
+            type: QueryTypes.SELECT
+        })
+        return equipo
+    } catch (error) {
+        throw error
+    }
+}
+
+const getCantidadEquiposPorEstado = async () => {
+    try {
+        const query = `
+            SELECT estado, COUNT(*) AS cantidad
+            FROM Equipos
+            GROUP BY estado;
+        `;
+        const [results, metadata] = await sequelize.query(query);
+        return results;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
 module.exports = {
     getAllEquipo,
     getEquipoById,
@@ -128,5 +159,7 @@ module.exports = {
     updateEquipo,
     deleteEquipo,
     getEquipoByEstado,
-    getEquipoByComodin
+    getEquipoByComodin,
+    getCantidadEquipos,
+    getCantidadEquiposPorEstado
 }
