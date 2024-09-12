@@ -12,10 +12,10 @@ const getAllUser = async (req, res, next) => {
     }
 }
 
-const getAllUsersFalse = async (req, res, next) => {
+const getAllUsersStatus = async (req, res, next) => {
     const estado = req.params.estado
     try {
-        const user = await userService.getAllUsersFalse(estado)
+        const user = await userService.getAllUsersStatus(estado)
         return res.status(200).json(user)
     } catch (error) {
         next(error);
@@ -193,6 +193,6 @@ module.exports = {
     deleteUser,
     login,
     changeStatusTrue,
-    getAllUsersFalse,
+    getAllUsersStatus,
     logout
 }
