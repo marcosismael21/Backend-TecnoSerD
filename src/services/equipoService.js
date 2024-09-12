@@ -63,6 +63,24 @@ const deleteEquipo = async (id) => {
     }
 }
 
+const getCantidadEquipos = async () => {
+    try {
+        const equipo = await equipoRepository.getCantidadEquipos()
+        return (equipo) ? equipo : []
+    } catch (error) {
+        throw error
+    }
+}
+
+const getCantidadEquiposPorEstado = async () => {
+    try {
+        const equipo = await equipoRepository.getCantidadEquiposPorEstado();
+        return (equipo) ? equipo : []
+    } catch (error) {
+        throw error;
+    }
+};
+
 module.exports = {
     getAllEquipo,
     getEquipoById,
@@ -70,5 +88,7 @@ module.exports = {
     updateEquipo,
     deleteEquipo,
     getEquipoByEstado,
-    getEquipoByComodin
+    getEquipoByComodin,
+    getCantidadEquipos,
+    getCantidadEquiposPorEstado
 }
