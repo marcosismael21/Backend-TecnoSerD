@@ -61,7 +61,7 @@ const getEquipoByNoSerie = async (noserie) => {
 };
 
 // Crear comercio, equipos y asignar en una sola transacción
-const createComercioConEquiposYAsignacion = async (comercioData, equiposData, tipoProblema, tipoGestion, canal) => {
+/*const createComercioConEquiposYAsignacion = async (comercioData, equiposData, tipoProblema, tipoGestion, canal) => {
     try {
         // Iniciar la transacción
         const result = await sequelize.transaction(async (t) => {
@@ -111,6 +111,32 @@ const createComercioConEquiposYAsignacion = async (comercioData, equiposData, ti
         return result;
     } catch (error) {
         console.error('Error en la transacción:', error);
+        throw error;
+    }
+};*/
+
+const createComercioConEquiposYAsignacion = async (comercioData, equipos) => {
+    const transaction = await db.sequelize.transaction(); // Iniciar transacción
+    try {
+        // Crear comercio
+        const comercio = await Comercio.create(comercioData, { transaction });
+
+        // Crear equipos asociados al comercio
+        for (let equipoData of equipos) {
+            const equipo = await Equipo.create(equipoData, { transaction });
+
+            // Crear asignación del equipo al comercio
+            await Asignacion.create({
+                idComercio: comercio.id,
+                idEquipo: equipo.id
+            }, { transaction });
+        }
+
+        // Confirmar transacción si todo sale bien
+        await transaction.commit();
+    } catch (error) {
+        // Revertir transacción si algo falla
+        await transaction.rollback();
         throw error;
     }
 };

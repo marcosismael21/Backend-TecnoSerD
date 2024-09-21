@@ -216,7 +216,159 @@ const importEquiposExcelData = async (buffer) => {
     }
 };
 
+const importExcelDataUnificado = async (buffer) => {
+    try {
+        // Leer el archivo Excel desde el buffer
+        const workbook = xlsx.read(buffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const excelData = xlsx.utils.sheet_to_json(sheet);
+
+        const fechaActual = new Date(); // Fecha de llegada actual
+
+        for (let row of excelData) {
+            // Buscar la ciudad en la base de datos
+            const ciudad = await Ciudad.findOne({
+                where: {
+                    nombre: row['CIUDAD'],
+                    estado: 1
+                }
+            });
+
+            // Buscar el tipo de comercio en la base de datos
+            const tipoComercio = await TipoComercio.findOne({
+                where: {
+                    nombre: row['Tipo de Comercio'],
+                    estado: 1
+                }
+            });
+
+            const numTienda = row['ID TIENDA'] ? row['ID TIENDA'] : 0;
+            const numUsuario = row['USUARIO'] ? row['USUARIO'] : 0;
+
+            // Buscar el proveedor
+            const proveedor = await Proveedor.findOne({
+                where: {
+                    nombre: row['CANAL'],
+                    estado: 1
+                }
+            });
+
+            if (!proveedor) {
+                throw new Error(`Proveedor no encontrado para el canal: ${row['CANAL']}`);
+            }
+
+            // Crear el objeto comercio
+            const comercioData = {
+                nombreComercio: row['Nombre de Comercio'],
+                rtn: row['RTN'],
+                direccion: row['DIRECCIÓN'],
+                numTienda: numTienda,
+                nombreContacto: row['NOMBRE DE CONTACTO'],
+                telefono: row['TELÉFONO'],
+                numUsuario: numUsuario,
+                idCiudad: ciudad ? ciudad.id : null,
+                longitud: row['Lonjitud'],
+                latitud: row['Latitud'],
+                idTipoComercio: tipoComercio ? tipoComercio.id : null
+            };
+
+            // Preparar los equipos
+            const equipos = [];
+
+            // Registro D2 Mini
+            let tipoTerminal = row['TIPO DE TERMINAL'] ? row['TIPO DE TERMINAL'].toUpperCase() : '';
+            tipoTerminal = tipoTerminal.includes('SUNMI') ? tipoTerminal.replace('SUNMI ', '') : tipoTerminal;
+
+            if (tipoTerminal === 'D2 MINI' && row['SN'] && row['IMEI']) {
+                const tipoEquipoD2Mini = await TipoEquipo.findOne({
+                    where: {
+                        nombre: 'd2 mini',
+                        idProveedor: proveedor.id,
+                        estado: 1
+                    }
+                });
+
+                equipos.push({
+                    idTipoEquipo: tipoEquipoD2Mini.id,
+                    noserie: row['SN'],
+                    noimei: row['IMEI'],
+                    pin: 0,
+                    puk: 0,
+                    fechaLlegada: fechaActual,
+                    comodin: false,
+                    estado: true
+                });
+            }
+
+            // Otros equipos
+            const tiposDeEquipo = [
+                { nombre: 'QPOS', columna: 'QPOS' },
+                { nombre: 'Power Bank', columna: 'Power Bank SN' },
+                { nombre: 'Scanner', columna: 'SCANNER' },
+                { nombre: 'Lectora', columna: 'Lectora S/N' }
+            ];
+
+            for (let tipo of tiposDeEquipo) {
+                const noserie = row[tipo.columna];
+                if (noserie) {
+                    const tipoEquipo = await TipoEquipo.findOne({
+                        where: {
+                            nombre: tipo.nombre.toLowerCase(),
+                            idProveedor: proveedor.id,
+                            estado: 1
+                        }
+                    });
+
+                    equipos.push({
+                        idTipoEquipo: tipoEquipo.id,
+                        noserie: noserie,
+                        noimei: 0,
+                        pin: 0,
+                        puk: 0,
+                        fechaLlegada: fechaActual,
+                        comodin: false,
+                        estado: true
+                    });
+                }
+            }
+
+            // Registro de chips
+            const compania = row['Compañía'] ? row['Compañía'].toUpperCase() : '';
+            const pin = row['PIN'] || 0;
+            const puk = row['PUK'] || 0;
+
+            if (compania === 'TIGO' || compania === 'CLARO') {
+                const nombreChip = compania === 'TIGO' ? 'chip tigo' : 'chip claro';
+                const tipoEquipoChip = await TipoEquipo.findOne({
+                    where: {
+                        nombre: nombreChip,
+                        estado: 1
+                    }
+                });
+
+                equipos.push({
+                    idTipoEquipo: tipoEquipoChip.id,
+                    noserie: 0,
+                    noimei: 0,
+                    pin: pin,
+                    puk: puk,
+                    fechaLlegada: fechaActual,
+                    comodin: false,
+                    estado: true
+                });
+            }
+
+            // Llamar a la función que crea el comercio con los equipos y la asignación
+            await excelRepository.createComercioConEquiposYAsignacion(comercioData, equipos);
+        }
+    } catch (error) {
+        throw error;
+    }
+};
+
 module.exports = {
     importExcelData,
-    importEquiposExcelData
+    importEquiposExcelData,
+    importExcelDataUnificado
 };
