@@ -81,6 +81,15 @@ const getCantidadEquiposPorEstado = async () => {
     }
 };
 
+const getEquipoSinAsignar = async () => {
+    try {
+        const equipo = await equipoRepository.getEquipoSinAsignar()
+        return (equipo) ? equipo : []
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     getAllEquipo,
     getEquipoById,
@@ -90,5 +99,6 @@ module.exports = {
     getEquipoByEstado,
     getEquipoByComodin,
     getCantidadEquipos,
-    getCantidadEquiposPorEstado
+    getCantidadEquiposPorEstado,
+    getEquipoSinAsignar,
 }

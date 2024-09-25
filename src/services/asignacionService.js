@@ -45,10 +45,30 @@ const deleteAsignacion = async (id) => {
     }
 }
 
+const getAllByComercioEstadoServicio = async (idComercio, idEstado, idServicio) => {
+    try {
+        const asignacion = await asignacionRepository.getAllByComercioEstadoServicio(idComercio, idEstado, idServicio)
+        return (asignacion) ? asignacion : []
+    } catch (error) {
+        throw error
+    }
+}
+
+const updateAsignacionConTransaccion = async (data) => {
+    try {
+        const asignacion = await asignacionRepository.updateAsignacionConTransaccion(data)
+        return (asignacion) ? asignacion : []
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllAsignacion,
     getAsignacionById,
     createAsignacion,
     updateAsignacion,
     deleteAsignacion,
+    getAllByComercioEstadoServicio,
+    updateAsignacionConTransaccion,
 }

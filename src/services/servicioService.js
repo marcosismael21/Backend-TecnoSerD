@@ -45,10 +45,21 @@ const deleteServicio = async (id) => {
     }
 }
 
+const getServicioCanal = async () => {
+    try {
+        const servicio = await servicioRepository.getServicioCanal()
+        return (servicio) ? servicio : []
+    } catch (error) {
+        throw error
+    }
+ 
+}
+
 module.exports = {
     getAllServicio,
     getServicioById,
     createServicio,
     updateServicio,
     deleteServicio,
+    getServicioCanal
 }

@@ -150,6 +150,14 @@ const getCantidadEquiposPorEstado = async (req, res, next) => {
     }
 };
 
+const getEquipoSinAsignar = async (req, res, next) => {
+    try {
+        const equipo = await equipoService.getEquipoSinAsignar()
+        return res.status(200).json(equipo)
+    } catch (error) {
+        next(error)
+    }
+}
 
 module.exports = {
     getAllEquipo,
@@ -161,5 +169,6 @@ module.exports = {
     getEquipoByComodin,
     changeEquipoStatus,
     getCantidadEquipos,
-    getCantidadEquiposPorEstado
+    getCantidadEquiposPorEstado,
+    getEquipoSinAsignar
 }
