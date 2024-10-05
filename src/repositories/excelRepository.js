@@ -2,16 +2,6 @@ const db = require('../models')
 const Comercio = db.Comercio
 const Equipo = db.Equipo
 const Asignacion = db.Asignacion
-const Servicio = db.Servicio
-const Estado = db.Estado
-
-const {
-    sequelize
-} = require("../models");
-const {
-    QueryTypes,
-    Transaction
-} = require('sequelize');
 
 const createComercioConEquiposYAsignacion = async (comercioData, equipos, TipoProblema, idServicio) => {
     const transaction = await db.sequelize.transaction(); // Iniciar transacción
@@ -70,8 +60,46 @@ const getEquipoByNoSerie = async (noserie) => {
     }
 };
 
+const createComercioConEquiposYAsignacionById = async (comercioid, equipos, TipoProblema, idServicio) => {
+    const transaction = await db.sequelize.transaction(); // Iniciar transacción
+    try {
+        // Crear equipos asociados al comercio
+        for (let equipoData of equipos) {
+            const equipo = await Equipo.create(equipoData, { transaction });
+
+            // Crear asignación del equipo al comercio
+            await Asignacion.create({
+                idComercio: comercioid,
+                idEquipo: equipo.id,
+                idEstado: 1, // idEstado siempre será 1
+                tipoProblema: TipoProblema,
+                idServicio: idServicio
+            }, { transaction });
+        }
+
+        // Confirmar transacción si todo sale bien
+        await transaction.commit();
+    } catch (error) {
+        // Revertir transacción si algo falla
+        await transaction.rollback();
+        throw error;
+    }
+};
+
+const createEquipos = async (equipos) => {
+    try {
+        for (let equipoData of equipos) {
+            await Equipo.create(equipoData);
+        }
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getComercioExistente,
     getEquipoByNoSerie,
     createComercioConEquiposYAsignacion,
+    createComercioConEquiposYAsignacionById,
+    createEquipos
 }

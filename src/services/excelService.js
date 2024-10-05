@@ -15,6 +15,7 @@ const importExcelDataUnificado = async (buffer) => {
         const excelData = xlsx.utils.sheet_to_json(sheet);
 
         const fechaActual = new Date(); // Fecha de llegada actual
+        const processedComercios = {}; // Para rastrear comercios y servicios procesados
 
         for (let row of excelData) {
             // Buscar la ciudad en la base de datos por nombre y estado activo
@@ -90,7 +91,8 @@ const importExcelDataUnificado = async (buffer) => {
                 { nombre: 'QPOS', columna: 'QPOS' },
                 { nombre: 'Power Bank', columna: 'Power Bank SN' },
                 { nombre: 'Scanner', columna: 'SCANNER' },
-                { nombre: 'Lectora', columna: 'Lectora S/N' }
+                { nombre: 'Lectora', columna: 'Lectora S/N' },
+                { nombre: 'TOKEN', columna: 'TOKEN' },
             ];
 
             for (let tipo of tiposDeEquipo) {
@@ -157,10 +159,31 @@ const importExcelDataUnificado = async (buffer) => {
 
             const TipoProblemaData = row['Tipo de Problema'] ? row['Tipo de Problema'] : '';
 
-            // Llamar a la función que crea el comercio con los equipos y la asignación
-            await excelRepository.createComercioConEquiposYAsignacion(comercioData, equipos, TipoProblemaData, servicio.id);
+            // Verificar si el comercio ya ha sido procesado con el mismo servicio
+            const comercioKey = `${comercioData.nombreComercio}-${servicio.id}`;
+            console.log(`Processing comercioKey: ${comercioKey}`); // Debugging line
+            if (processedComercios[comercioKey]) {
+                // Marcar equipos como comodines
+                equipos.forEach(equipo => equipo.comodin = 1);
+                await excelRepository.createEquipos(equipos)
+            } else {
+                // Marcar el comercio como procesado con este servicio
+                processedComercios[comercioKey] = true;
+                console.log(`Marking comercio as processed: ${comercioKey}`); // Debugging line
+
+                // Verificar si el comercio ya existe en la base de datos
+                let comercioId = await excelRepository.getComercioExistente(comercioData.rtn, comercioData.nombreComercio);
+                if (!comercioId) {
+                    // Crear el comercio si no existe
+                    await excelRepository.createComercioConEquiposYAsignacion(comercioData, equipos, TipoProblemaData, servicio.id);
+                } else {
+                    // Asignar equipos al comercio existente
+                    await excelRepository.createComercioConEquiposYAsignacionById(comercioId.id, equipos, TipoProblemaData, servicio.id);
+                }
+            }
         }
     } catch (error) {
+        console.error(error); // Debugging line
         throw error;
     }
 };
