@@ -9,6 +9,24 @@ const getAllEquipo = async () => {
     }
 }
 
+const getEquipoByComodin = async (comodin) => {
+    try {
+        const equipo = await equipoRepository.getEquipoByComodin(comodin)
+        return (equipo) ? equipo : []
+    } catch (error) {
+        throw error
+    }
+}
+
+const getEquipoByEstado = async (estado) => {
+    try {
+        const equipo = await equipoRepository.getEquipoByEstado(estado)
+        return (equipo) ? equipo : []
+    } catch (error) {
+        throw error
+    }
+}
+
 const getEquipoById = async (id) => {
     try {
         const equipo = await equipoRepository.getEquipoById(id)
@@ -45,10 +63,42 @@ const deleteEquipo = async (id) => {
     }
 }
 
+const getCantidadEquipos = async () => {
+    try {
+        const equipo = await equipoRepository.getCantidadEquipos()
+        return (equipo) ? equipo : []
+    } catch (error) {
+        throw error
+    }
+}
+
+const getCantidadEquiposPorEstado = async () => {
+    try {
+        const equipo = await equipoRepository.getCantidadEquiposPorEstado();
+        return (equipo) ? equipo : []
+    } catch (error) {
+        throw error;
+    }
+};
+
+const getEquipoSinAsignar = async () => {
+    try {
+        const equipo = await equipoRepository.getEquipoSinAsignar()
+        return (equipo) ? equipo : []
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     getAllEquipo,
     getEquipoById,
     createEquipo,
     updateEquipo,
     deleteEquipo,
+    getEquipoByEstado,
+    getEquipoByComodin,
+    getCantidadEquipos,
+    getCantidadEquiposPorEstado,
+    getEquipoSinAsignar,
 }

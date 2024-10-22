@@ -11,16 +11,19 @@ const {
 
 const getAllTipoEquipo = async () => {
     try {
-        const te= `SELECT 
-    te. *, p.nombre as idProveedor
-FROM 
-    tipoequipos te
-JOIN 
-    proveedors p ON te.idProveedor = p.id;`
-    const tipoEquipo = await sequelize.query(te, {
-        type: QueryTypes.SELECT
-    })
-    return tipoEquipo
+        const sql = `
+        SELECT
+	te.*,
+	pr.nombre AS idProveedor 
+FROM
+	tipoequipos te
+	LEFT JOIN proveedors AS pr ON pr.id = te.idProveedor
+        `
+
+        const tipoEquipo = await sequelize.query(sql, {
+            type: QueryTypes.SELECT
+        })
+        return tipoEquipo
     } catch (error) {
         throw error
     }
@@ -59,7 +62,7 @@ const updateTipoEquipo = async (data, id) => {
     } catch (error) {
         throw error
     }
-}
+}.
 
 const deleteTipoEquipo = async (id) => {
     try {

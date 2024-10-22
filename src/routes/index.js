@@ -19,6 +19,7 @@ const comercioRoutes = require('./comercio.routes')
 const equipoRoutes = require('./equipo.routes')
 const asignacionRoutes = require('./asignacion.routes')
 const asignacionTecnicoRoutes = require('./asignacionTecnico.routes')
+const excelRoutes = require('./excel.routes')
 
 //establecer las rutas web
 router.use('/api/v1/usuario', authRoutes);
@@ -37,6 +38,7 @@ router.use('/api/v1/canal', canalRoutes)
 router.use('/api/v1/estado', estadoRoutes)
 router.use('/api/v1/ciudad', ciudadRoutes)
 router.use('/api/v1/comercio', comercioRoutes)
+router.use('/api/v1/excel', excelRoutes)
 
 //la exportacion
 module.exports = router;

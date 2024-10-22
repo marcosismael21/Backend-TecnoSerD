@@ -26,7 +26,7 @@ const createAsignacion = async (req, res, next) => {
         idEquipo,
         tipoProblema,
         idEstado
-        
+
     } = req.body
 
     const data = {
@@ -82,10 +82,49 @@ const deleteAsignacion = async (req, res, next) => {
     }
 }
 
+const getAllByComercioEstadoServicio = async (req, res, next) => {
+    const { idComercio, idEstado, idServicio } = req.params
+    if (!idComercio || !idEstado || !idServicio) {
+        return res.status(400).json({ message: 'Faltan parámetros obligatorios' })
+    }
+    try {
+        const asignacion = await asignacionService.getAllByComercioEstadoServicio(idComercio, idEstado, idServicio)
+        return res.status(200).json(asignacion)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const updateAsignacionConTransaccion = async (req, res, next) => {
+    const {
+        idComercio,
+        idServicio,
+        idEstado,
+        nuevosEquipos,
+        tipoProblema,
+    } = req.body
+
+    const data = {
+        idComercio,
+        idServicio,
+        idEstado,
+        nuevosEquipos,
+        tipoProblema,
+    }
+    try {
+        const asignacion = await asignacionService.updateAsignacionConTransaccion(data)
+        return res.status(200).json(asignacion)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllAsignacion,
     getAsignacionById,
     createAsignacion,
     updateAsignacion,
-    deleteAsignacion
+    deleteAsignacion,
+    getAllByComercioEstadoServicio,
+    updateAsignacionConTransaccion,
 }
