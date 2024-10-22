@@ -5,13 +5,21 @@ const {
     sequelize
 } = require("../models");
 const {
-    QueryTypes
+    QueryTypes,
+    Transaction
 } = require('sequelize');
 
-const getAllPublicidad_Regalia = async () =>{
+const getAllPublicidad_Regalia = async () => {
     try {
-        const sql = "SELECT pr.*, tc.nombre as idTipoComercio FROM publicidadregalia AS pr LEFT JOIN tipocomercios AS tc ON tc.id=pr.idTipoComercio;"
-        const publicidad_regalia = await sequelize.query(sql, {
+
+        const q = `SELECT
+	                p.*,
+	                tc.nombre AS idTipoComercio 
+                    FROM
+	                publicidadregalia AS p
+	                LEFT JOIN tipocomercios AS tc ON tc.id = p.idTipoComercio`
+
+        const publicidad_regalia = await sequelize.query(q, {
             type: QueryTypes.SELECT
         })
         return publicidad_regalia;
@@ -20,7 +28,7 @@ const getAllPublicidad_Regalia = async () =>{
     }
 }
 
-const getPublicidad_RegaliaById = async (id) =>{
+const getPublicidad_RegaliaById = async (id) => {
     try {
         const publicidad_regalia = await Publicidad_Regalia.findOne({
             where: {
@@ -33,7 +41,7 @@ const getPublicidad_RegaliaById = async (id) =>{
     }
 }
 
-const createPublicidad_Regalia = async (data) =>{
+const createPublicidad_Regalia = async (data) => {
     try {
         const publicidad_regalia = await Publicidad_Regalia.create(data)
         return publicidad_regalia
@@ -42,7 +50,7 @@ const createPublicidad_Regalia = async (data) =>{
     }
 }
 
-const updatePublicidad_Regalia = async (data, id) =>{
+const updatePublicidad_Regalia = async (data, id) => {
     try {
         const publicidad_regalia = await Publicidad_Regalia.update(data, {
             where: {
