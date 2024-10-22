@@ -7,6 +7,7 @@ const { comercioValidationRules, validate } = require('../middleware/validacione
 
 // Rutas para el manejo
 router.get('/', verifyToken, comercioController.getAllComercio)
+router.get('/maps/:latitud/:longitud', comercioController.getGoogleMapsLink)
 router.get('/:id', verifyToken, comercioController.getComercioById)
 router.post('/', [verifyToken, comercioValidationRules(), validate], comercioController.createComercio)
 router.put('/:id', [verifyToken, comercioValidationRules(), validate], comercioController.updateComercio)

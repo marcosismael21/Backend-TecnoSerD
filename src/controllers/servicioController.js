@@ -73,10 +73,20 @@ const deleteServicio = async (req, res, next) => {
     }
 }
 
+const getServicioCanal = async (req, res, next) => {
+    try {
+        const servicio = await servicioService.getServicioCanal()
+        return res.status(200).json(servicio)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllServicio,
     getServicioById,
     createServicio,
     updateServicio,
-    deleteServicio
+    deleteServicio,
+    getServicioCanal
 }

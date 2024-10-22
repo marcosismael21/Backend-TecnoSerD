@@ -11,8 +11,6 @@ const {
 
 const getAllEquipo = async () => {
     try {
-        /* const equipo = await Equipo.findAll()
-         return equipo*/
         const q = `SELECT
 	                    e.*,
                         te.nombre as idTipoEquipo
@@ -21,6 +19,31 @@ const getAllEquipo = async () => {
                         LEFT JOIN tipoequipos AS te ON te.id = e.idTipoEquipo;`
 
         const equipo = await sequelize.query(q, {
+            type: QueryTypes.SELECT
+        })
+        return equipo
+    } catch (error) {
+        throw error
+    }
+}
+
+const getEquipoSinAsignar = async () => {
+    try {
+        const sql = `
+        SELECT
+            eq.*,
+            CASE 
+                WHEN eq.idTipoEquipo IN (9, 10) THEN CONCAT(te.nombre, ' pin:', eq.pin, ' puk:', eq.puk)
+                ELSE CONCAT(te.nombre, ' NS:', eq.noserie)
+            END AS idTipoEquipo
+        FROM
+            equipos AS eq
+            LEFT JOIN tipoequipos AS te ON te.id = eq.idTipoEquipo
+            LEFT JOIN asignacions AS asig ON eq.id = asig.idEquipo 
+        WHERE
+            asig.idEquipo IS NULL;`
+
+        const equipo = await sequelize.query(sql, {
             type: QueryTypes.SELECT
         })
         return equipo
@@ -47,12 +70,6 @@ const getEquipoByEstado = async (estado) => {
             type: QueryTypes.SELECT
         })
 
-        /*const equipo = await Equipo.findAll({
-            where: {
-                estado: estado,
-                comodin: false
-            }
-        })*/
         return equipo
     } catch (error) {
         throw error
@@ -61,11 +78,19 @@ const getEquipoByEstado = async (estado) => {
 
 const getEquipoByComodin = async (comodin) => {
     try {
-        const equipo = await Equipo.findAll({
-            where: {
-                comodin: comodin,
-                estado: true
-            }
+        const q = `SELECT
+	                    e.*,
+                        te.nombre as idTipoEquipo
+                       FROM
+                        equipos AS e
+                        LEFT JOIN tipoequipos AS te ON te.id = e.idTipoEquipo
+                        WHERE e.comodin  = :xcomodin`
+
+        const equipo = await sequelize.query(q, {
+            replacements: {
+                xcomodin: comodin
+            },
+            type: QueryTypes.SELECT
         })
         return equipo
     } catch (error) {
@@ -161,5 +186,6 @@ module.exports = {
     getEquipoByEstado,
     getEquipoByComodin,
     getCantidadEquipos,
-    getCantidadEquiposPorEstado
+    getCantidadEquiposPorEstado,
+    getEquipoSinAsignar
 }
