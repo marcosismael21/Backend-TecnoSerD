@@ -1,9 +1,27 @@
 const db = require('../models')
 const Canal = db.Canal
 
+const {
+    sequelize
+} = require("../models");
+const {
+    QueryTypes,
+    Transaction
+} = require('sequelize');
+
 const getAllCanal = async () => {
     try {
-        const canal = await Canal.findAll()
+
+        const q = `SELECT
+	                c.*,
+	                tc.nombre AS idTipoComercio 
+                    FROM
+	                canals AS c
+	                LEFT JOIN tipocomercios AS tc ON tc.id = c.idTipoComercio`
+
+        const canal = await sequelize.query(q, {
+            type: QueryTypes.SELECT
+        })
         return canal
     } catch (error) {
         throw error

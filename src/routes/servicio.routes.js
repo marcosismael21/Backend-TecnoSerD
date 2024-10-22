@@ -7,6 +7,7 @@ const { servicioValidationRules, validate } = require('../middleware/validacione
 
 // Rutas para el manejo
 router.get('/', verifyToken, servicioController.getAllServicio)
+router.get('/sc', verifyToken, servicioController.getServicioCanal)
 router.get('/:id', verifyToken, servicioController.getServicioById)
 router.post('/', [verifyToken, servicioValidationRules(), validate], servicioController.createServicio)
 router.put('/:id', [verifyToken, servicioValidationRules(), validate], servicioController.updateServicio)

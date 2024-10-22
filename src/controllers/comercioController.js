@@ -50,7 +50,7 @@ const createComercio = async (req, res, next) => {
 
     try {
         const comercio = await comercioService.createComercio(data)
-        return res.status(200).json(comercio)
+        return res.status(200).json({ comercio, message: 'Se creo correctamente.' })
     } catch (error) {
         next(error)
     }
@@ -105,10 +105,27 @@ const deleteComercio = async (req, res, next) => {
     }
 }
 
+const getGoogleMapsLink = (req, res, next) => {
+    try {
+        const { longitud, latitud } = req.params
+
+        if (!longitud || !latitud) {
+            return res.status(400).json({ message: 'Longitud y latitud son requeridos' })
+        }
+
+        const googleMapsUrl = `https://www.google.com/maps?q=${latitud},${longitud}`
+        return res.status(200).json({ googleMapsUrl })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllComercio,
     getComercioById,
     createComercio,
     updateComercio,
-    deleteComercio
+    deleteComercio,
+    getGoogleMapsLink,
 }
