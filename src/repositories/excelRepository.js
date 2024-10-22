@@ -96,10 +96,26 @@ const createEquipos = async (equipos) => {
     }
 }
 
+const getEquipos = async (equipos) => {
+    try {
+        const { idTipoEquipo, noserie } = equipos
+        const equipo = await Equipo.findOne({
+            where:{
+                idTipoEquipo: idTipoEquipo,
+                noserie: noserie,
+            }
+        })
+        return equipo
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getComercioExistente,
     getEquipoByNoSerie,
     createComercioConEquiposYAsignacion,
     createComercioConEquiposYAsignacionById,
-    createEquipos
+    createEquipos,
+    getEquipos,
 }

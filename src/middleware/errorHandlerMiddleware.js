@@ -1,22 +1,26 @@
 const errorHandlerMiddleware = (err, req, res, next) => {
     const {
-        error,
-        status,
-        message
+        status = 500,
+        message = 'Servicio no disponible',
+        error
     } = err;
-    if (error && status && message) {
-        res.status(status).json({
-            status,
-            message
-        })
-    }else{
-        res.status(500).json({
-            status:500,
-            message:"Servicio no disponible"
-        })
+
+    // Verifica si es un error de Foreign Key
+    if (message.includes('foreign key constraint fails')) {
+        return res.status(400).json({
+            status: 400,
+            message: 'No se puede eliminar el registro porque está siendo utilizado en otra parte del sistema.',
+            error: message  // Para propósitos de depuración, se puede enviar el mensaje técnico
+        });
     }
 
+    // Respuesta genérica para otros errores
+    res.status(status).json({
+        status,
+        message,
+        m: err.message,
+        error
+    });
+};
 
-}
-
-module.exports = errorHandlerMiddleware
+module.exports = errorHandlerMiddleware;
