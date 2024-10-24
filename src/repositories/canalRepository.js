@@ -1,5 +1,8 @@
-const db = require('../models')
-const Canal = db.Canal
+const db = require("../models");
+const Canal = db.Canal;
+
+const { sequelize } = require("../models");
+const { QueryTypes } = require("sequelize");
 
 const {
     sequelize
@@ -11,7 +14,6 @@ const {
 
 const getAllCanal = async () => {
     try {
-
         const q = `SELECT
 	                c.*,
 	                tc.nombre AS idTipoComercio 
@@ -23,63 +25,64 @@ const getAllCanal = async () => {
             type: QueryTypes.SELECT
         })
         return canal
+
     } catch (error) {
-        throw error
+        throw error;
     }
-}
+};
 
 const getCanalById = async (id) => {
     try {
         const canal = await Canal.findOne({
             where: {
-                id: id
-            }
-        })
-        return canal
+                id: id,
+            },
+        });
+        return canal;
     } catch (error) {
-        throw error
+        throw error;
     }
-}
+};
 
 const createCanal = async (data) => {
     try {
-        const canal = await Canal.create(data)
-        return canal
+        const canal = await Canal.create(data);
+        return canal;
     } catch (error) {
-        throw error
+        throw error;
     }
-}
+};
 
 const updateCanal = async (data, id) => {
     try {
         const canal = await Canal.update(data, {
             where: {
-                id: id
-            }
-        })
-        return canal
+                id: id,
+            },
+        });
+        return canal;
     } catch (error) {
-        throw error
+        throw error;
     }
-}
+};
 
 const deleteCanal = async (id) => {
     try {
         const canal = await Canal.destroy({
             where: {
-                id: id
-            }
-        })
-        return canal
+                id: id,
+            },
+        });
+        return canal;
     } catch (error) {
-        throw error
+        throw error;
     }
-}
+};
 
 module.exports = {
     getAllCanal,
     getCanalById,
     createCanal,
     updateCanal,
-    deleteCanal
-}
+    deleteCanal,
+};

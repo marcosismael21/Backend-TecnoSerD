@@ -19,7 +19,7 @@ const verifyToken = async (req, res, next) => {
 
         // Si no hay token en ninguno de los dos lugares, lanzar un error
         if (!token) {
-            return res.status(403).send({ message: "No token provided!" });
+            return res.status(403).send({ message: "¡Ya no existe un token!" });
         }
 
         // Verificar y decodificar el token
