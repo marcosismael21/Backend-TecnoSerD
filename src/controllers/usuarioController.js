@@ -185,6 +185,15 @@ const logout = async (req, res, next) => {
     }
 }
 
+const getAllUserByRol = async (req, res, next) => {
+    try {
+        const user = await userService.getAllUserByRol()
+        return res.status(200).json(user)
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     getAllUser,
     getUserById,
@@ -194,5 +203,6 @@ module.exports = {
     login,
     changeStatusTrue,
     getAllUsersStatus,
-    logout
+    logout,
+    getAllUserByRol,
 }
