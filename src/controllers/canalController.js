@@ -34,7 +34,7 @@ const createCanal = async (req, res, next) => {
 
     try {
         const canal = await canalService.createCanal(data)
-        return res.status(200).json(canal)
+        return res.status(200).json({canal, message: 'Se creo correctamente.'})
     } catch (error) {
         next(error)
     }
@@ -57,7 +57,7 @@ const updateCanal = async (req, res, next) => {
 
     try {
         const canal = await canalService.updateCanal(data, id)
-        return res.status(200).json(canal)
+        return res.status(200).json({canal, message: 'Se actualizo correctamente.'})
     } catch (error) {
         next(error)
     }
@@ -67,7 +67,7 @@ const deleteCanal = async (req, res, next) => {
     const id = req.params.id
     try {
         const canal = await canalService.deleteCanal(id)
-        return res.status(200).json(canal)
+        return res.status(200).json({canal, message: 'Se elimino correctamente.'})
     } catch (error) {
         next(error)
     }
