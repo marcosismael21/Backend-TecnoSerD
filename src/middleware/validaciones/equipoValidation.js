@@ -35,7 +35,7 @@ const validate = (req, res, next) => {
     
 
     return res.status(422).json({
-        errors: extractedErrors,
+        message: extractedErrors,
     })
 }
 
