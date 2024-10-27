@@ -89,7 +89,7 @@ const updateComercio = async (req, res, next) => {
 
     try {
         const comercio = await comercioService.updateComercio(data, id)
-        return res.status(200).json(comercio)
+        return res.status(200).json({ comercio, message: 'Se actualizo correctamente.' })
     } catch (error) {
         next(error)
     }
@@ -99,7 +99,7 @@ const deleteComercio = async (req, res, next) => {
     const id = req.params.id
     try {
         const comercio = await comercioService.deleteComercio(id)
-        return res.status(200).json(comercio)
+        return res.status(200).json({ comercio, message: 'Se elimino correctamente.' })
     } catch (error) {
         next(error)
     }

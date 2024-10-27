@@ -65,7 +65,7 @@ const createEquipo = async (req, res, next) => {
 
     try {
         const equipo = await equipoService.createEquipo(data)
-        return res.status(200).json(equipo)
+        return res.status(200).json({ equipo, message: 'Se creo correctamente.' })
     } catch (error) {
         next(error)
     }
@@ -98,7 +98,7 @@ const updateEquipo = async (req, res, next) => {
 
     try {
         const equipo = await equipoService.updateEquipo(data, id)
-        return res.status(200).json(equipo)
+        return res.status(200).json({ equipo, message: 'Se actualizo correctamente.' })
     } catch (error) {
         next(error)
     }
@@ -108,7 +108,7 @@ const deleteEquipo = async (req, res, next) => {
     const id = req.params.id
     try {
         const equipo = await equipoService.deleteEquipo(id)
-        return res.status(200).json(equipo)
+        return res.status(200).json({equipo, message: 'Se elimino correctamente.'})
     } catch (error) {
         next(error)
     }
@@ -125,7 +125,7 @@ const changeEquipoStatus = async (req, res, next) => {
     }
     try {
         const equipo = await equipoService.updateEquipo(data, id)
-        return res.status(200).json(equipo)
+        return res.status(200).json({equipo, message: 'Se cambio el estado correctamente.'})
     } catch (error) {
         next(error)
     }
@@ -138,7 +138,6 @@ const getCantidadEquipos = async (req, res, next) => {
     } catch (error) {
         next(error)
     }
- 
 }
 
 const getCantidadEquiposPorEstado = async (req, res, next) => {
