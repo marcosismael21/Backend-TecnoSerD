@@ -5,7 +5,8 @@ const {
     sequelize
 } = require("../models");
 const {
-    QueryTypes
+    QueryTypes,
+    Transaction
 } = require('sequelize');
 
 const getAllTipoEquipo = async () => {
@@ -61,7 +62,7 @@ const updateTipoEquipo = async (data, id) => {
     } catch (error) {
         throw error
     }
-}
+}.
 
 const deleteTipoEquipo = async (id) => {
     try {

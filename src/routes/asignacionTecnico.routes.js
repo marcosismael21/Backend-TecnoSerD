@@ -9,6 +9,7 @@ const { asignacionTecnicoValidationRules, validate } = require('../middleware/va
 router.get('/', verifyToken, asignacionTecnicoController.getAllAsignacionTecnico)
 router.get('/:id', verifyToken, asignacionTecnicoController.getAsignacionTecnicoById)
 router.post('/', [verifyToken, asignacionTecnicoValidationRules(), validate], asignacionTecnicoController.createAsignacionTecnico)
+router.post('/at', [verifyToken, validate], asignacionTecnicoController.createAsignacionTecnicoTransaction)
 router.put('/:id', [verifyToken, asignacionTecnicoValidationRules(), validate], asignacionTecnicoController.updateAsignacionTecnico)
 router.delete('/:id', verifyToken, asignacionTecnicoController.deleteAsignacionTecnico)
 
