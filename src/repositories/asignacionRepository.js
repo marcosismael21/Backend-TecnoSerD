@@ -18,6 +18,7 @@ const getAllAsignacion = async () => {
 	            asig.idServicio,
 	            asig.idEstado,
 	            co.nombreComercio AS nomComerio,
+                ciu.nombre AS ciudad,
 	            co.longitud,
 	            co.latitud,
 	            CONCAT( se.nombre, ' ', ca.nombre ) AS servicio,
@@ -33,6 +34,7 @@ const getAllAsignacion = async () => {
 	            LEFT JOIN canals AS ca ON ca.id = se.idcanal
 	            LEFT JOIN equipos AS eq ON eq.id = asig.idEquipo
 	            LEFT JOIN tipoequipos AS ti ON ti.id = eq.idTipoEquipo 
+                LEFT JOIN ciudads AS ciu ON ciu.id = co.idCiudad
             GROUP BY
 	            asig.idComercio,
 	            asig.idServicio,
@@ -44,7 +46,8 @@ const getAllAsignacion = async () => {
 	            co.latitud,
 	            se.nombre,
 	            ca.nombre,
-	            es.nombre;`
+	            es.nombre,
+                ciu.nombre;`
 
         const asignacion = await sequelize.query(sql, {
             type: QueryTypes.SELECT
