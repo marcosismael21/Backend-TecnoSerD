@@ -1,8 +1,6 @@
 const db = require("../models");
 const Canal = db.Canal;
 
-const { sequelize } = require("../models");
-const { QueryTypes } = require("sequelize");
 
 const {
     sequelize

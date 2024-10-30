@@ -62,7 +62,7 @@ const updateTipoEquipo = async (data, id) => {
     } catch (error) {
         throw error
     }
-}.
+}
 
 const deleteTipoEquipo = async (id) => {
     try {
