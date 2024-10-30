@@ -52,7 +52,7 @@ const createUser = async (req, res, next) => {
 
     try {
         const user = await userService.createUser(data);
-        return res.status(200).json(user);
+        return res.status(200).json({user, message:'Se creo correctamente.'});
     } catch (error) {
         next(error);
     }
@@ -79,7 +79,7 @@ const updateUser = async (req, res, next) => {
 
     try {
         const user = await userService.updateUser(data, id);
-        return res.status(200).json(user);
+        return res.status(200).json({user, message:'Se actualizo correctamente.'});
     } catch (error) {
         next(error);
     }
@@ -97,7 +97,7 @@ const changeStatusTrue = async (req, res, next) => {
 
     try {
         const user = await userService.updateUser(data, id);
-        return res.status(200).json(user);
+        return res.status(200).json({user, message:'Se actualizo corectamente'});
     } catch (error) {
         next(error);
     }
@@ -107,7 +107,7 @@ const deleteUser = async (req, res, next) => {
     const id = req.params.id;
     try {
         const user = await userService.deleteUser(id);
-        return res.status(200).json(user);
+        return res.status(200).json({user, message: 'Se elimino correctamente.'});
     } catch (error) {
         next(error);
     }
@@ -185,6 +185,15 @@ const logout = async (req, res, next) => {
     }
 }
 
+const getAllUserByRol = async (req, res, next) => {
+    try {
+        const user = await userService.getAllUserByRol()
+        return res.status(200).json(user)
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     getAllUser,
     getUserById,
@@ -194,5 +203,6 @@ module.exports = {
     login,
     changeStatusTrue,
     getAllUsersStatus,
-    logout
+    logout,
+    getAllUserByRol,
 }

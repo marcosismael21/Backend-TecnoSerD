@@ -30,7 +30,7 @@ FROM
 WHERE
 	us.estado = :xestado
         `
-        const user = await sequelize.query(sql,{
+        const user = await sequelize.query(sql, {
             replacements: {
                 xestado: estado
             },
@@ -106,6 +106,20 @@ const login = async (usuario) => {
     }
 }
 
+const getAllUserByRol = async () => {
+    try {
+        const user = await User.findAll({
+            where: {
+                idrol: 3,
+                estado: 1
+            }
+        })
+        return user
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     getAllUser,
     getUserById,
@@ -114,4 +128,5 @@ module.exports = {
     deleteUser,
     login,
     getAllUsersStatus,
+    getAllUserByRol,
 }

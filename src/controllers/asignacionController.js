@@ -39,7 +39,7 @@ const createAsignacion = async (req, res, next) => {
 
     try {
         const asignacion = await asignacionService.createAsignacion(data)
-        return res.status(200).json(asignacion)
+        return res.status(200).json({ asignacion, message: 'Se creo correctamente.' })
     } catch (error) {
         next(error)
     }
@@ -66,7 +66,7 @@ const updateAsignacion = async (req, res, next) => {
 
     try {
         const asignacion = await asignacionService.updateAsignacion(data, id)
-        return res.status(200).json(asignacion)
+        return res.status(200).json({ asignacion, message: 'Se actualizo correctamente' })
     } catch (error) {
         next(error)
     }
@@ -76,7 +76,7 @@ const deleteAsignacion = async (req, res, next) => {
     const id = req.params.id
     try {
         const asignacion = await asignacionService.deleteAsignacion(id)
-        return res.status(200).json(asignacion)
+        return res.status(200).json({ asignacion, message: 'Se elimino correctamente.' })
     } catch (error) {
         next(error)
     }
@@ -113,7 +113,7 @@ const updateAsignacionConTransaccion = async (req, res, next) => {
     }
     try {
         const asignacion = await asignacionService.updateAsignacionConTransaccion(data)
-        return res.status(200).json(asignacion)
+        return res.status(200).json({ asignacion, message: 'Se actualizo correctamente.' })
     } catch (error) {
         next(error)
     }

@@ -32,7 +32,7 @@ const createCiudad = async (req, res, next) => {
 
     try {
         const proveedor = await ciudadService.createCiudad(data)
-        return res.status(200).json(proveedor)
+        return res.status(200).json({proveedor, message: 'Se creo correctamente.'})
     } catch (error) {
         next(error)
     }
@@ -53,7 +53,7 @@ const updateCiudad = async (req, res, next) => {
 
     try {
         const proveedor = await ciudadService.updateCiudad(data, id)
-        return res.status(200).json(proveedor)
+        return res.status(200).json({proveedor, message: 'Se actualizo correctamente.'})
     } catch (error) {
         next(error)
     }
@@ -63,7 +63,7 @@ const deleteCiudad = async (req, res, next) => {
     const id = req.params.id
     try {
         const proveedor = await ciudadService.deleteCiudad(id)
-        return res.status(200).json(proveedor)
+        return res.status(200).json({proveedor, message: 'Se elimino correctamente.'})
     } catch (error) {
         next(error)
     }
