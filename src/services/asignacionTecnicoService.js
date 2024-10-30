@@ -45,10 +45,20 @@ const deleteAsignacionTecnico = async (id) => {
     }
 }
 
+const createAsignacionTecnicoTransaction = async (idUsuario, idComercio, idEstado, idServicio) => {
+    try {
+        const asignacionTecnico = await asignacionTecnicoRepository.createAsignacionTecnicoTransaction(idUsuario,idComercio,idEstado,idServicio)
+        return (asignacionTecnico) ? asignacionTecnico : []
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllAsignacionTecnico,
     getAsignacionTecnicoById,
     createAsignacionTecnico,
     updateAsignacionTecnico,
     deleteAsignacionTecnico,
+    createAsignacionTecnicoTransaction,
 }
