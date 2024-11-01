@@ -32,7 +32,7 @@ const createRol = async (req, res, next) => {
 
     try {
         const rol = await rolService.createRol(data)
-        return res.status(200).json(rol)
+        return res.status(200).json({ rol, message: 'Se creo correctamente.' })
     } catch (error) {
         next(error)
     }
@@ -53,7 +53,7 @@ const updateRol = async (req, res, next) => {
 
     try {
         const rol = await rolService.updateRol(data, id)
-        return res.status(200).json(rol)
+        return res.status(200).json({ rol, message: 'Se actualizo correctamente.' })
     } catch (error) {
         next(error)
     }
@@ -63,7 +63,7 @@ const deleteRol = async (req, res, next) => {
     const id = req.params.id
     try {
         const rol = await rolService.deleteRol(id)
-        return res.status(200).json(rol)
+        return res.status(200).json({ rol, message: 'Se elimino correctamente.' })
     } catch (error) {
         next(error)
     }

@@ -57,10 +57,11 @@ const getEquipoByEstado = async (estado) => {
 
         const q = `SELECT
 	                    e.*,
-                        te.nombre as idTipoEquipo
+                        CONCAT(te.nombre, ' - ', p.nombre) AS idTipoEquipo
                        FROM
-                        equipos AS e
-                        LEFT JOIN tipoequipos AS te ON te.id = e.idTipoEquipo
+                          equipos AS e
+                          LEFT JOIN tipoequipos AS te ON te.id = e.idTipoEquipo
+                          LEFT JOIN proveedors AS p ON p.id = te.idProveedor
                         WHERE e.estado = :xestado AND e.comodin = false`
 
         const equipo = await sequelize.query(q, {
@@ -80,10 +81,11 @@ const getEquipoByComodin = async (comodin) => {
     try {
         const q = `SELECT
 	                    e.*,
-                        te.nombre as idTipoEquipo
+                        CONCAT(te.nombre, ' - ', p.nombre) AS idTipoEquipo
                        FROM
                         equipos AS e
                         LEFT JOIN tipoequipos AS te ON te.id = e.idTipoEquipo
+                        LEFT JOIN proveedors AS p ON p.id = te.idProveedor
                         WHERE e.comodin  = :xcomodin`
 
         const equipo = await sequelize.query(q, {
