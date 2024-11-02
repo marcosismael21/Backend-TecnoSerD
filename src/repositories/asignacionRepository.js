@@ -70,6 +70,7 @@ const getAllByComercioEstadoServicio = async (idComercio, idEstado, idServicio) 
                 co.latitud,
                 CONCAT(se.nombre, ' ', ca.nombre) AS servicio,
                 asig.tipoProblema,
+                asig.interpretacion,
                 es.nombre AS estado,
                 GROUP_CONCAT(
             CASE 
@@ -94,6 +95,7 @@ const getAllByComercioEstadoServicio = async (idComercio, idEstado, idServicio) 
                 asig.idServicio,
                 asig.idEstado,
                 asig.tipoProblema,
+                asig.interpretacion,
                 co.nombreComercio,
                 co.longitud,
                 co.latitud,

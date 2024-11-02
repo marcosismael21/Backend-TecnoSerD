@@ -25,8 +25,8 @@ const createAsignacion = async (req, res, next) => {
         idServicio,
         idEquipo,
         tipoProblema,
-        idEstado
-
+        idEstado,
+        interpretacion
     } = req.body
 
     const data = {
@@ -34,7 +34,8 @@ const createAsignacion = async (req, res, next) => {
         idServicio,
         idEquipo,
         tipoProblema,
-        idEstado
+        idEstado,
+        interpretacion
     }
 
     try {
@@ -53,7 +54,8 @@ const updateAsignacion = async (req, res, next) => {
         idServicio,
         idEquipo,
         tipoProblema,
-        idEstado
+        idEstado,
+        interpretacion
     } = req.body
 
     const data = {
@@ -61,7 +63,8 @@ const updateAsignacion = async (req, res, next) => {
         idServicio,
         idEquipo,
         tipoProblema,
-        idEstado
+        idEstado,
+        interpretacion
     }
 
     try {
@@ -102,6 +105,7 @@ const updateAsignacionConTransaccion = async (req, res, next) => {
         idEstado,
         nuevosEquipos,
         tipoProblema,
+        interpretacion,
     } = req.body
 
     const data = {
@@ -110,6 +114,7 @@ const updateAsignacionConTransaccion = async (req, res, next) => {
         idEstado,
         nuevosEquipos,
         tipoProblema,
+        interpretacion,
     }
     try {
         const asignacion = await asignacionService.updateAsignacionConTransaccion(data)
