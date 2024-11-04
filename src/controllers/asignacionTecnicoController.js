@@ -89,6 +89,57 @@ const createAsignacionTecnicoTransaction = async (req, res, next) => {
     }
 }
 
+const createMultipleAsignaciones = async (req, res, next) => {
+
+    const asignaciones = req.body; // Espera un array de objetos
+
+    try {
+        const asignacionTecnico = await asignacionTecnicoService.createMultipleAsignaciones(asignaciones)
+        return res.status(200).json({ asignacionTecnico, message: 'Se creo correctamente' })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getAllAsignacionTecnicoSQL = async (req, res, next) => {
+    try {
+        const asignacionTecnico = await asignacionTecnicoService.getAllAsignacionTecnicoSQL()
+        return res.status(200).json(asignacionTecnico)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getAllByTecnicoComercioEstadoServicio = async (req, res, next) => {
+    const {
+        idUsuario,
+        idComercio,
+        idEstado,
+        idServicio
+    } = req.params;
+    try {
+        const asignacionTecnico = await asignacionTecnicoService.getAllByTecnicoComercioEstadoServicio(idUsuario, idComercio, idEstado, idServicio)
+        return res.status(200).json(asignacionTecnico)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const cancelarAsignacion = async (req, res, next) => {
+    const {
+        idUsuario,
+        idComercio,
+        idEstado,
+        idServicio
+    } = req.params;
+    try {
+        const asignacionTecnico = await asignacionTecnicoService.cancelarAsignacion(idUsuario, idComercio, idServicio, idEstado)
+        return res.status(200).json(asignacionTecnico)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllAsignacionTecnico,
     getAsignacionTecnicoById,
@@ -96,4 +147,8 @@ module.exports = {
     updateAsignacionTecnico,
     deleteAsignacionTecnico,
     createAsignacionTecnicoTransaction,
+    createMultipleAsignaciones,
+    getAllAsignacionTecnicoSQL,
+    getAllByTecnicoComercioEstadoServicio,
+    cancelarAsignacion,
 }

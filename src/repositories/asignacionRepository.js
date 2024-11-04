@@ -172,6 +172,7 @@ const updateAsignacionConTransaccion = async (data) => {
         idEstado,
         nuevosEquipos,
         tipoProblema,
+        interpretacion,
     } = data;
 
     const transaction = await db.sequelize.transaction(); // Iniciar transacción
@@ -236,6 +237,7 @@ const updateAsignacionConTransaccion = async (data) => {
                 idEquipo: equipoData,
                 idEstado: idEstado,
                 tipoProblema: tipoProblema,
+                interpretacion: interpretacion,
                 idServicio: idServicio
             }, { transaction });
         }
@@ -249,6 +251,59 @@ const updateAsignacionConTransaccion = async (data) => {
     }
 };
 
+const getAllAsignacionByIdEstado = async (idEstado) => {
+    try {
+        const sql = `
+            SELECT
+	            asig.idComercio,
+	            asig.idServicio,
+	            asig.idEstado,
+	            co.nombreComercio AS nomComerio,
+                ciu.nombre AS ciudad,
+	            co.longitud,
+	            co.latitud,
+	            CONCAT( se.nombre, ' ', ca.nombre ) AS servicio,
+	            asig.tipoProblema,
+	            es.nombre AS estado,
+	            GROUP_CONCAT( ti.nombre SEPARATOR ', ' ) AS listEquipos,
+                GROUP_CONCAT(eq.id SEPARATOR ', ') AS listEquiposIDs 
+            FROM
+	            asignacions AS asig
+	            LEFT JOIN comercios AS co ON co.id = asig.idComercio
+	            LEFT JOIN servicios AS se ON se.id = asig.idServicio
+	            LEFT JOIN estados AS es ON es.id = asig.idEstado
+	            LEFT JOIN canals AS ca ON ca.id = se.idcanal
+	            LEFT JOIN equipos AS eq ON eq.id = asig.idEquipo
+	            LEFT JOIN tipoequipos AS ti ON ti.id = eq.idTipoEquipo 
+                LEFT JOIN ciudads AS ciu ON ciu.id = co.idCiudad
+            WHERE
+                asig.idEstado = :xestado
+            GROUP BY
+	            asig.idComercio,
+	            asig.idServicio,
+	            asig.idEstado,
+	            asig.tipoProblema,
+	            asig.idEstado,
+	            co.nombreComercio,
+	            co.longitud,
+	            co.latitud,
+	            se.nombre,
+	            ca.nombre,
+	            es.nombre,
+                ciu.nombre;`
+
+        const asignacion = await sequelize.query(sql, {
+            replacements: {
+                xestado: idEstado,
+            },
+            type: QueryTypes.SELECT
+        })
+        return asignacion
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllAsignacion,
     getAsignacionById,
@@ -257,4 +312,5 @@ module.exports = {
     deleteAsignacion,
     getAllByComercioEstadoServicio,
     updateAsignacionConTransaccion,
+    getAllAsignacionByIdEstado,
 }

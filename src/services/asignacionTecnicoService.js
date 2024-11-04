@@ -47,7 +47,43 @@ const deleteAsignacionTecnico = async (id) => {
 
 const createAsignacionTecnicoTransaction = async (idUsuario, idComercio, idEstado, idServicio) => {
     try {
-        const asignacionTecnico = await asignacionTecnicoRepository.createAsignacionTecnicoTransaction(idUsuario,idComercio,idEstado,idServicio)
+        const asignacionTecnico = await asignacionTecnicoRepository.createAsignacionTecnicoTransaction(idUsuario, idComercio, idEstado, idServicio)
+        return (asignacionTecnico) ? asignacionTecnico : []
+    } catch (error) {
+        throw error
+    }
+}
+
+const createMultipleAsignaciones = async (asignaciones) => {
+    try {
+        const asignacionTecnico = await asignacionTecnicoRepository.createMultipleAsignaciones(asignaciones)
+        return (asignacionTecnico) ? asignacionTecnico : []
+    } catch (error) {
+        throw error
+    }
+}
+
+const getAllAsignacionTecnicoSQL = async () => {
+    try {
+        const asignacionTecnico = await asignacionTecnicoRepository.getAllAsignacionTecnicoSQL()
+        return (asignacionTecnico) ? asignacionTecnico : []
+    } catch (error) {
+        throw error
+    }
+}
+
+const getAllByTecnicoComercioEstadoServicio = async (idUsuario, idComercio, idEstado, idServicio) => {
+    try {
+        const asignacionTecnico = await asignacionTecnicoRepository.getAllByTecnicoComercioEstadoServicio(idUsuario, idComercio, idEstado, idServicio)
+        return (asignacionTecnico) ? asignacionTecnico : []
+    } catch (error) {
+        throw error
+    }
+}
+
+const cancelarAsignacion = async (idUsuario, idComercio, idEstado, idServicio) => {
+    try {
+        const asignacionTecnico = await asignacionTecnicoRepository.cancelarAsignacion(idUsuario, idComercio, idServicio, idEstado)
         return (asignacionTecnico) ? asignacionTecnico : []
     } catch (error) {
         throw error
@@ -61,4 +97,8 @@ module.exports = {
     updateAsignacionTecnico,
     deleteAsignacionTecnico,
     createAsignacionTecnicoTransaction,
+    createMultipleAsignaciones,
+    getAllAsignacionTecnicoSQL,
+    getAllByTecnicoComercioEstadoServicio,
+    cancelarAsignacion,
 }
