@@ -102,8 +102,9 @@ const createMultipleAsignaciones = async (req, res, next) => {
 }
 
 const getAllAsignacionTecnicoSQL = async (req, res, next) => {
+    const { idEstado } = req.params
     try {
-        const asignacionTecnico = await asignacionTecnicoService.getAllAsignacionTecnicoSQL()
+        const asignacionTecnico = await asignacionTecnicoService.getAllAsignacionTecnicoSQL(idEstado)
         return res.status(200).json(asignacionTecnico)
     } catch (error) {
         next(error)

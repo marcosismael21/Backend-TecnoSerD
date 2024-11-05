@@ -185,7 +185,7 @@ const createMultipleAsignaciones = async (asignaciones) => {
     }
 }
 
-const getAllAsignacionTecnicoSQL = async () => {
+const getAllAsignacionTecnicoSQL = async (idEstado) => {
     try {
         const sql = `
             SELECT AT
@@ -212,7 +212,7 @@ const getAllAsignacionTecnicoSQL = async () => {
 	          LEFT JOIN canals AS ca ON ca.id = se.idcanal
 	          LEFT JOIN usuarios AS u ON u.id = AT.idUsuario 
             WHERE
-	          AT.idEstado = asig.idEstado 
+	          AT.idEstado = :xestado
             GROUP BY
 	          AT.idUsuario,
 	          u.nombres,
@@ -227,10 +227,13 @@ const getAllAsignacionTecnicoSQL = async () => {
 	          es.id,
 	          es.nombre;`
 
-        const asignacionTecnico = await sequelize.query(sql, {
+        const asignacion = await sequelize.query(sql, {
+            replacements: {
+                xestado: idEstado,
+            },
             type: QueryTypes.SELECT
         })
-        return asignacionTecnico
+        return asignacion
     } catch (error) {
         throw error
     }

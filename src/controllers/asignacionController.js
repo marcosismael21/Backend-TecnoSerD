@@ -106,7 +106,9 @@ const updateAsignacionConTransaccion = async (req, res, next) => {
         nuevosEquipos,
         tipoProblema,
         interpretacion,
-    } = req.body
+        idComercioAnterior, // Asegúrate de incluir idComercioAnterior
+        idServicioAnterior
+    } = req.body;
 
     const data = {
         idComercio,
@@ -115,15 +117,17 @@ const updateAsignacionConTransaccion = async (req, res, next) => {
         nuevosEquipos,
         tipoProblema,
         interpretacion,
-    }
-    try {
-        const asignacion = await asignacionService.updateAsignacionConTransaccion(data)
-        return res.status(200).json({ asignacion, message: 'Se actualizo correctamente.' })
-    } catch (error) {
-        next(error)
-    }
-}
+        idComercioAnterior, // Asegúrate de pasar idComercioAnterior
+        idServicioAnterior
+    };
 
+    try {
+        const asignacion = await asignacionService.updateAsignacionConTransaccion(data);
+        return res.status(200).json({ asignacion, message: 'Se actualizó correctamente.' });
+    } catch (error) {
+        next(error);
+    }
+};
 const getAllAsignacionByIdEstado = async (req, res, next) => {
     const { idEstado } = req.params
     if (!idEstado) {
@@ -132,6 +136,19 @@ const getAllAsignacionByIdEstado = async (req, res, next) => {
     try {
         const asignacion = await asignacionService.getAllAsignacionByIdEstado(idEstado)
         return res.status(200).json(asignacion)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const deleteAsignacionTransaction = async (req, res, next) => {
+    const { idComercio, idServicio, idEstado } = req.params
+    if (!idComercio || !idServicio || !idEstado) {
+        return res.status(400).json({ message: 'Faltan parámetros obligatorios' })
+    }
+    try {
+        const asignacion = await asignacionService.deleteAsignacionTransaction(idComercio, idServicio, idEstado)
+        return res.status(200).json({ message: 'Se eliminó correctamente.' })
     } catch (error) {
         next(error)
     }
@@ -146,4 +163,5 @@ module.exports = {
     getAllByComercioEstadoServicio,
     updateAsignacionConTransaccion,
     getAllAsignacionByIdEstado,
+    deleteAsignacionTransaction,
 }

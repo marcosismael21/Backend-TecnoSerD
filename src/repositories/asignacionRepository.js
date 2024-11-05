@@ -7,7 +7,8 @@ const {
 } = require("../models");
 const {
     QueryTypes,
-    Transaction
+    Transaction,
+    where
 } = require('sequelize');
 
 const getAllAsignacion = async () => {
@@ -17,7 +18,7 @@ const getAllAsignacion = async () => {
 	            asig.idComercio,
 	            asig.idServicio,
 	            asig.idEstado,
-	            co.nombreComercio AS nomComerio,
+	            co.nombreComercio AS nomComercio,
                 ciu.nombre AS ciudad,
 	            co.longitud,
 	            co.latitud,
@@ -65,7 +66,7 @@ const getAllByComercioEstadoServicio = async (idComercio, idEstado, idServicio) 
                 asig.idComercio,
                 asig.idServicio,
                 asig.idEstado,
-                co.nombreComercio AS nomComerio,
+                co.nombreComercio AS nomComercio,
                 co.longitud,
                 co.latitud,
                 CONCAT(se.nombre, ' ', ca.nombre) AS servicio,
@@ -131,10 +132,26 @@ const getAsignacionById = async (id) => {
 }
 
 const createAsignacion = async (data) => {
+    const {
+        idEquipo
+    } = data
+    const transaction = await db.sequelize.transaction(); // Iniciar transacción
     try {
-        const asignacion = await Asignacion.create(data)
+        const asignacion = await Asignacion.create(data, { transaction })
+        await Equipo.update({
+            comodin: 0
+        },
+            {
+                where: {
+                    id: idEquipo
+                },
+                transaction
+            });
+
+        await transaction.commit(); // Confirmar transacción
         return asignacion
     } catch (error) {
+        await transaction.rollback(); // Revertir transacción si algo falla
         throw error
     }
 }
@@ -173,16 +190,18 @@ const updateAsignacionConTransaccion = async (data) => {
         nuevosEquipos,
         tipoProblema,
         interpretacion,
+        idComercioAnterior, // Añadir el idComercio anterior
+        idServicioAnterior // Añadir el idServicio anterior
     } = data;
 
     const transaction = await db.sequelize.transaction(); // Iniciar transacción
 
     try {
-        // Obtener los equipos actualmente asignados al comercio
+        // Obtener los equipos actualmente asignados al comercio y servicio anteriores
         const equiposAsignadosAnteriormente = await Asignacion.findAll({
             where: {
-                idComercio: idComercio,
-                idServicio: idServicio,
+                idComercio: idComercioAnterior, // Usar idComercioAnterior
+                idServicio: idServicioAnterior, // Usar idServicioAnterior
                 idEstado: idEstado
             },
             attributes: ['idEquipo'], // Solo necesitamos los IDs de los equipos asignados
@@ -220,25 +239,25 @@ const updateAsignacionConTransaccion = async (data) => {
             }
         );
 
-        // 3. Eliminar asignaciones anteriores para el comercio
+        // 3. Eliminar asignaciones anteriores para el comercio y servicio anteriores
         await Asignacion.destroy({
             where: {
-                idComercio: idComercio,
-                idServicio: idServicio,
+                idComercio: idComercioAnterior, // Usar idComercioAnterior
+                idServicio: idServicioAnterior, // Usar idServicioAnterior
                 idEstado: idEstado
             },
             transaction
         });
 
-        // 4. Crear nuevas asignaciones para los equipos proporcionados
+        // 4. Crear nuevas asignaciones para los equipos proporcionados con el nuevo idComercio y idServicio
         for (let equipoData of equiposArray) {
             await Asignacion.create({
-                idComercio: idComercio,
+                idComercio: idComercio, // Usar el nuevo idComercio
                 idEquipo: equipoData,
                 idEstado: idEstado,
                 tipoProblema: tipoProblema,
                 interpretacion: interpretacion,
-                idServicio: idServicio
+                idServicio: idServicio // Usar el nuevo idServicio
             }, { transaction });
         }
 
@@ -251,6 +270,7 @@ const updateAsignacionConTransaccion = async (data) => {
     }
 };
 
+
 const getAllAsignacionByIdEstado = async (idEstado) => {
     try {
         const sql = `
@@ -258,7 +278,7 @@ const getAllAsignacionByIdEstado = async (idEstado) => {
 	            asig.idComercio,
 	            asig.idServicio,
 	            asig.idEstado,
-	            co.nombreComercio AS nomComerio,
+	            co.nombreComercio AS nomComercio,
                 ciu.nombre AS ciudad,
 	            co.longitud,
 	            co.latitud,
@@ -304,6 +324,55 @@ const getAllAsignacionByIdEstado = async (idEstado) => {
     }
 }
 
+const deleteAsignacionTransaction = async (idComercio, idServicio, idEstado) => {
+    const transaction = await db.sequelize.transaction(); // Iniciar transacción
+
+    try {
+
+        // Buscar todos los equipos que coincidan con esos parámetros
+        const asignacionesEncontradas = await Asignacion.findAll({
+            where: {
+                idComercio: idComercio,
+                idServicio: idServicio,
+                idEstado: idEstado
+            },
+            attributes: ['idEquipo'],
+            transaction
+        });
+
+        // Extraer los idEquipo
+        const idEquipos = asignacionesEncontradas.map(asignacion => asignacion.idEquipo);
+
+        // Actualizar el campo comodin de los equipos
+        await Equipo.update(
+            { comodin: 1 },
+            {
+                where: {
+                    id: idEquipos
+                },
+                transaction
+            }
+        );
+
+        await Asignacion.destroy({
+            where: {
+                idComercio: idComercio,
+                idServicio: idServicio,
+                idEstado: idEstado
+            },
+            transaction
+        });
+
+        // Confirmar transacción si todo sale bien
+        await transaction.commit()
+
+    } catch (error) {
+        // Revertir transacción si algo falla
+        await transaction.rollback()
+        throw error
+    }
+}
+
 module.exports = {
     getAllAsignacion,
     getAsignacionById,
@@ -313,4 +382,5 @@ module.exports = {
     getAllByComercioEstadoServicio,
     updateAsignacionConTransaccion,
     getAllAsignacionByIdEstado,
+    deleteAsignacionTransaction,
 }

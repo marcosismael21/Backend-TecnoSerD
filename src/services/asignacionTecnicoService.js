@@ -63,9 +63,9 @@ const createMultipleAsignaciones = async (asignaciones) => {
     }
 }
 
-const getAllAsignacionTecnicoSQL = async () => {
+const getAllAsignacionTecnicoSQL = async (idEstado) => {
     try {
-        const asignacionTecnico = await asignacionTecnicoRepository.getAllAsignacionTecnicoSQL()
+        const asignacionTecnico = await asignacionTecnicoRepository.getAllAsignacionTecnicoSQL(idEstado)
         return (asignacionTecnico) ? asignacionTecnico : []
     } catch (error) {
         throw error
@@ -81,7 +81,7 @@ const getAllByTecnicoComercioEstadoServicio = async (idUsuario, idComercio, idEs
     }
 }
 
-const cancelarAsignacion = async (idUsuario, idComercio, idEstado, idServicio) => {
+const cancelarAsignacion = async (idUsuario, idComercio, idServicio, idEstado) => {
     try {
         const asignacionTecnico = await asignacionTecnicoRepository.cancelarAsignacion(idUsuario, idComercio, idServicio, idEstado)
         return (asignacionTecnico) ? asignacionTecnico : []

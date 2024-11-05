@@ -7,7 +7,7 @@ const { asignacionTecnicoValidationRules, validate } = require('../middleware/va
 
 // Rutas para el manejo
 router.post('/mat', [verifyToken, validate], asignacionTecnicoController.createMultipleAsignaciones)
-router.get('/at', verifyToken, asignacionTecnicoController.getAllAsignacionTecnicoSQL)
+router.get('/at/:idEstado', verifyToken, asignacionTecnicoController.getAllAsignacionTecnicoSQL)
 router.get('/tces/:idUsuario/:idComercio/:idEstado/:idServicio', verifyToken, asignacionTecnicoController.getAllByTecnicoComercioEstadoServicio)
 router.get('/', verifyToken, asignacionTecnicoController.getAllAsignacionTecnico)
 router.get('/:id', verifyToken, asignacionTecnicoController.getAsignacionTecnicoById)

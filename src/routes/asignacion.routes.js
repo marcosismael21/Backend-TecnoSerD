@@ -14,6 +14,7 @@ router.get('/s/:idEstado', verifyToken, asignacionController.getAllAsignacionByI
 router.post('/', [verifyToken, asignacionValidationRules(), validate], asignacionController.createAsignacion)
 router.put('/:id', [verifyToken, asignacionValidationRules(), validate], asignacionController.updateAsignacion)
 router.delete('/:id', verifyToken, asignacionController.deleteAsignacion)
+router.delete('/cse/:idComercio/:idServicio/:idEstado', verifyToken, asignacionController.deleteAsignacionTransaction)
 
 //la exportacion
 

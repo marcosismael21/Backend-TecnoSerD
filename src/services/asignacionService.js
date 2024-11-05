@@ -72,6 +72,15 @@ const getAllAsignacionByIdEstado = async (idEstado) => {
     }
 }
 
+const deleteAsignacionTransaction = async (idComercio, idServicio, idEstado) => {
+    try {
+        const asignacion = await asignacionRepository.deleteAsignacionTransaction(idComercio, idServicio, idEstado)
+        return (asignacion) ? asignacion : []
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllAsignacion,
     getAsignacionById,
@@ -81,4 +90,5 @@ module.exports = {
     getAllByComercioEstadoServicio,
     updateAsignacionConTransaccion,
     getAllAsignacionByIdEstado,
+    deleteAsignacionTransaction,
 }
