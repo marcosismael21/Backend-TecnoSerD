@@ -362,6 +362,61 @@ const cancelarAsignacion = async (idUsuario, idComercio, idServicio, idEstado) =
     }
 };
 
+const getAllListAsignacionesByTecnico = async (idUsuario) => {
+    try {
+        const sql = `
+            SELECT AT
+	          .idUsuario,
+	          u.nombres AS tecnico,
+	          GROUP_CONCAT( AT.idAsignacion SEPARATOR ', ' ) AS listAsignacionId,
+	          co.id AS idComercio,
+	          co.nombreComercio AS nomComercio,
+	          co.longitud,
+	          co.latitud,
+	          ciu.nombre AS ciudad,
+	          se.id AS idServicio,
+	          se.nombre AS servicio,
+	          ca.nombre AS canal,
+	          es.id AS idEstado,
+	          es.nombre AS estado 
+            FROM
+	          asignaciontecnicos
+	          AS AT LEFT JOIN asignacions AS asig ON asig.id = AT.idAsignacion
+	          LEFT JOIN comercios AS co ON co.id = asig.idComercio
+	          LEFT JOIN ciudads AS ciu ON ciu.id = co.idCiudad
+	          LEFT JOIN servicios AS se ON se.id = asig.idServicio
+	          LEFT JOIN estados AS es ON es.id = AT.idEstado
+	          LEFT JOIN canals AS ca ON ca.id = se.idcanal
+	          LEFT JOIN usuarios AS u ON u.id = AT.idUsuario 
+            WHERE
+	          AT.idEstado = 2
+              AND AT.idUsuario = :xusuario
+            GROUP BY
+	          AT.idUsuario,
+	          u.nombres,
+	          co.id,
+	          co.nombreComercio,
+	          co.longitud,
+	          co.latitud,
+	          ciu.nombre,
+	          se.id,
+	          se.nombre,
+	          ca.nombre,
+	          es.id,
+	          es.nombre;`
+
+        const asignacion = await sequelize.query(sql, {
+            replacements: {
+                xusuario: idUsuario
+            },
+            type: QueryTypes.SELECT
+        })
+        return asignacion
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllAsignacionTecnico,
     getAsignacionTecnicoById,
@@ -373,4 +428,5 @@ module.exports = {
     getAllAsignacionTecnicoSQL,
     getAllByTecnicoComercioEstadoServicio,
     cancelarAsignacion,
+    getAllListAsignacionesByTecnico,
 }

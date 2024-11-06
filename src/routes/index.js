@@ -24,7 +24,7 @@ const excelRoutes = require('./excel.routes')
 //establecer las rutas web
 router.use('/api/v1/usuario', authRoutes);
 router.use('/api/v1/rol', rolRoutes);
-router.use('/api/v1/pubreg', publicidadRegaliaRoutes)
+router.use('/api/v1/pubreg', publicidadRegaliaRoutes) 
 router.use('/api/v1/rolusuario', rolUsuarioRoutes)
 router.use('/api/v1/servicio', servicioRoutes)
 router.use('/api/v1/proveedor', proveedorRoutes);

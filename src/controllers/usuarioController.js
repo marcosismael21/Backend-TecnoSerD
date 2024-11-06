@@ -175,6 +175,11 @@ const logout = async (req, res, next) => {
             secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
         });
 
+        res.clearCookie("userData", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
+        });
+
         return res.status(200).json({
             ok: true,
             mensage: "Logout exitoso"

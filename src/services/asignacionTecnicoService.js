@@ -90,6 +90,15 @@ const cancelarAsignacion = async (idUsuario, idComercio, idServicio, idEstado) =
     }
 }
 
+const getAllListAsignacionesByTecnico = async (idUsuario) => {
+    try {
+        const asignacionTecnico = await asignacionTecnicoRepository.getAllListAsignacionesByTecnico(idUsuario)
+        return (asignacionTecnico) ? asignacionTecnico : []
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllAsignacionTecnico,
     getAsignacionTecnicoById,
@@ -101,4 +110,5 @@ module.exports = {
     getAllAsignacionTecnicoSQL,
     getAllByTecnicoComercioEstadoServicio,
     cancelarAsignacion,
+    getAllListAsignacionesByTecnico,
 }
