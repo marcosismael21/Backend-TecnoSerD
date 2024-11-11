@@ -187,7 +187,7 @@ const logout = async (req, res, next) => {
             secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
         });
 
-        res.clearCookie("role", {
+        res.clearCookie("rol", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
         });

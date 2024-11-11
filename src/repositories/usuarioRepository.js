@@ -98,6 +98,7 @@ const login = async (usuario) => {
         const user = await User.findOne({
             where: {
                 usuario: usuario,
+                estado: 1,
             }
         });
         return user;
@@ -110,7 +111,7 @@ const getAllUserByRol = async () => {
     try {
         const user = await User.findAll({
             where: {
-                idrol: 3,
+                idrol: 2,
                 estado: 1
             }
         })
