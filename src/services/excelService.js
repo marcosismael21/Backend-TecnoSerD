@@ -12,7 +12,7 @@ const importExcelDataUnificado = async (buffer) => {
         const workbook = xlsx.read(buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const excelData = xlsx.utils.sheet_to_json(sheet);
+        const excelData =  xlsx.utils.sheet_to_json(sheet, { raw: false, defval: '' });
 
         const fechaActual = new Date(); // Fecha de llegada actual
         const processedComercios = {}; // Para rastrear comercios y servicios procesados
@@ -96,7 +96,7 @@ const importExcelDataUnificado = async (buffer) => {
             ];
 
             for (let tipo of tiposDeEquipo) {
-                const noserie = row[tipo.columna];
+                const noserie = row[tipo.columna] ? String(row[tipo.columna]) : '';
                 if (noserie) {
                     const tipoEquipo = await TipoEquipo.findOne({
                         where: {
@@ -108,7 +108,7 @@ const importExcelDataUnificado = async (buffer) => {
 
                     equipos.push({
                         idTipoEquipo: tipoEquipo.id,
-                        noserie: noserie,
+                        noserie: String(noserie),
                         noimei: 0,
                         pin: 0,
                         puk: 0,
