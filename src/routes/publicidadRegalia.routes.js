@@ -7,6 +7,7 @@ const {publicidadValidationRules, validate} = require("../middleware/validacione
 
 // rutas para el manejo
 router.get('/',verifyToken, publicidadRegaliaController.getAllPublicidad_Regalia)
+router.get('/publicidad',verifyToken, publicidadRegaliaController.getPublicidad)
 router.get('/:id',verifyToken, publicidadRegaliaController.getPublicidad_RegaliaById)
 router.post('/',[verifyToken, publicidadValidationRules(), validate], publicidadRegaliaController.createPublicidad_Regalia)
 router.put('/:id',[verifyToken, publicidadValidationRules(), validate],publicidadRegaliaController.updatePublicidad_Regalia)

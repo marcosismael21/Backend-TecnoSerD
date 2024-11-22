@@ -21,18 +21,22 @@ const getPublicidadClienteById = async (req, res, next) => {
 
 const createPublicidadCliente = async (req, res, next) => {
     const {
-        idPublicidad,
-        idCliente
+        idPublicidadRegalia,
+        idComercio,
+        cantidad,
+        estado
     } = req.body
-        
+
     const data = {
-        idPublicidad,
-        idCliente    
+        idPublicidadRegalia,
+        idComercio,
+        cantidad,
+        estado
     }
 
     try {
         const publicidadCliente = await publicidadClienteService.createPublicidadCliente(data)
-        return res.status(200).json(publicidadCliente)
+        return res.status(200).json({ publicidadCliente, message: "Se creo correctamente." })
     } catch (error) {
         next(error)
     }
@@ -41,18 +45,22 @@ const createPublicidadCliente = async (req, res, next) => {
 const updatePublicidadCliente = async (req, res, next) => {
     const id = req.params.id
     const {
-        idPublicidad,
-        idCliente
+        idPublicidadRegalia,
+        idComercio,
+        cantidad,
+        estado
     } = req.body
-        
+
     const data = {
-        idPublicidad,
-        idCliente
+        idPublicidadRegalia,
+        idComercio,
+        cantidad,
+        estado
     }
 
     try {
         const publicidadCliente = await publicidadClienteService.updatePublicidadCliente(data, id)
-        return res.status(200).json(publicidadCliente)
+        return res.status(200).json({ publicidadCliente, message: "Se actualizo correctamente." })
     } catch (error) {
         next(error)
     }
@@ -62,7 +70,33 @@ const deletePublicidadCliente = async (req, res, next) => {
     const id = req.params.id
     try {
         const publicidadCliente = await publicidadClienteService.deletePublicidadCliente(id)
+        return res.status(200).json({ publicidadCliente, message: "Se elimino correctamente." })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getAllPublicidadRegaliaByIdUsuario = async (req, res, next) => {
+    const idUsuario = req.params.idUsuario
+    try {
+        const publicidadCliente = await publicidadClienteService.getAllPublicidadRegaliaByIdUsuario(idUsuario)
         return res.status(200).json(publicidadCliente)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const changeStatusPublicidad = async (req, res, next) => {
+    const id = req.params.id
+
+    const { estado } = req.body
+
+    const data = {
+        estado
+    }
+    try {
+        const publicidadCliente = await publicidadClienteService.updatePublicidadCliente(data, id)
+        return res.status(200).json({ publicidadCliente, message: "Se finalizo correctamente." })
     } catch (error) {
         next(error)
     }
@@ -73,5 +107,7 @@ module.exports = {
     getPublicidadClienteById,
     createPublicidadCliente,
     updatePublicidadCliente,
-    deletePublicidadCliente
+    deletePublicidadCliente,
+    getAllPublicidadRegaliaByIdUsuario,
+    changeStatusPublicidad,
 }

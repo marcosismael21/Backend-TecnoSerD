@@ -45,10 +45,20 @@ const deletePublicidadCliente = async (id) => {
     }
 }
 
+const getAllPublicidadRegaliaByIdUsuario = async (IdUsuario) => {
+    try {
+        const publicidadRegalia = await publicidadClienteRepository.getAllPublicidadRegaliaByIdUsuario(IdUsuario)
+        return (publicidadRegalia)? publicidadRegalia : []
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllPublicidadCliente,
     getPublicidadClienteById,
     createPublicidadCliente,
     updatePublicidadCliente,
-    deletePublicidadCliente
+    deletePublicidadCliente,
+    getAllPublicidadRegaliaByIdUsuario,
 }
