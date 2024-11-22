@@ -99,6 +99,24 @@ const getAllListAsignacionesByTecnico = async (idUsuario) => {
     }
 }
 
+const getAllByTecnicoComercioEstadoServicioDetalle = async (idUsuario, idComercio, idEstado, idServicio) => {
+    try {
+        const asignacionTecnico = await asignacionTecnicoRepository.getAllByTecnicoComercioEstadoServicioDetalle(idUsuario, idComercio, idEstado, idServicio)
+        return (asignacionTecnico) ? asignacionTecnico : []
+    } catch (error) {
+        throw error
+    }
+}
+
+const changeStatusAsignacion = async (data) => {
+    try {
+        const asignacionTecnico = await asignacionTecnicoRepository.changeStatusAsignacion(data)
+        return (asignacionTecnico) ? asignacionTecnico : []
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllAsignacionTecnico,
     getAsignacionTecnicoById,
@@ -111,4 +129,6 @@ module.exports = {
     getAllByTecnicoComercioEstadoServicio,
     cancelarAsignacion,
     getAllListAsignacionesByTecnico,
+    getAllByTecnicoComercioEstadoServicioDetalle,
+    changeStatusAsignacion,
 }

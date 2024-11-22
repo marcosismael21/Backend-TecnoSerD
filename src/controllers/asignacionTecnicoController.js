@@ -126,6 +126,21 @@ const getAllByTecnicoComercioEstadoServicio = async (req, res, next) => {
     }
 }
 
+const getAllByTecnicoComercioEstadoServicioDetalle = async (req, res, next) => {
+    const {
+        idUsuario,
+        idComercio,
+        idEstado,
+        idServicio
+    } = req.params;
+    try {
+        const asignacionTecnico = await asignacionTecnicoService.getAllByTecnicoComercioEstadoServicioDetalle(idUsuario, idComercio, idEstado, idServicio)
+        return res.status(200).json(asignacionTecnico)
+    } catch (error) {
+        next(error)
+    }
+}
+
 const cancelarAsignacion = async (req, res, next) => {
     const {
         idUsuario,
@@ -151,6 +166,29 @@ const getAllListAsignacionesByTecnico = async (req, res, next) => {
     }
 }
 
+const changeStatusAsignacion = async (req, res, next) => {
+    const {
+        idEstado, // Nuevo estado
+        idEstadoAnterior, // Estado previo (opcional, para validar)
+        listAsignacionId, // IDs de Asignación como arreglo
+        listAsignacionTecnicoID // IDs de AsignaciónTécnico como arreglo
+    } = req.body;
+
+    const data = {
+        idEstado,
+        idEstadoAnterior,
+        listAsignacionId,
+        listAsignacionTecnicoID
+    }
+
+    try {
+        const asignacionTecnico = await asignacionTecnicoService.changeStatusAsignacion(data)
+        return res.status(200).json({ asignacionTecnico, message: 'Operación realizada correctamente.' })
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllAsignacionTecnico,
     getAsignacionTecnicoById,
@@ -163,4 +201,6 @@ module.exports = {
     getAllByTecnicoComercioEstadoServicio,
     cancelarAsignacion,
     getAllListAsignacionesByTecnico,
+    getAllByTecnicoComercioEstadoServicioDetalle,
+    changeStatusAsignacion,
 }

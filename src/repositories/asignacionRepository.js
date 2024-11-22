@@ -8,7 +8,6 @@ const {
 const {
     QueryTypes,
     Transaction,
-    where
 } = require('sequelize');
 
 const getAllAsignacion = async () => {

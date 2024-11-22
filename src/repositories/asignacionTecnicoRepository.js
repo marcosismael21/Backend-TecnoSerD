@@ -258,6 +258,8 @@ const getAllByTecnicoComercioEstadoServicio = async (idUsuario, idComercio, idEs
                 es.nombre AS estado,
                 asig.tipoProblema,
                 asig.interpretacion,
+                GROUP_CONCAT( AT.id SEPARATOR ', ' ) AS listAsignacionTecnicoIDs,
+                GROUP_CONCAT( eq.id SEPARATOR ', ' ) AS listEquiposIDs,
                 GROUP_CONCAT(ti.nombre SEPARATOR ', ') AS listEquipos
             FROM
                 asignaciontecnicos AS at
@@ -367,6 +369,9 @@ const getAllListAsignacionesByTecnico = async (idUsuario) => {
         const sql = `
             SELECT AT
 	          .idUsuario,
+              GROUP_CONCAT(AT.idAsignacion SEPARATOR ', ') AS listAsignacionId,
+              GROUP_CONCAT(AT.id SEPARATOR ', ') AS listAsignacionTecnicoIDs,
+              GROUP_CONCAT(eq.id SEPARATOR ', ') AS listEquiposIDs,
 	          u.nombres AS tecnico,
 	          GROUP_CONCAT( AT.idAsignacion SEPARATOR ', ' ) AS listAsignacionId,
 	          co.id AS idComercio,
@@ -388,22 +393,23 @@ const getAllListAsignacionesByTecnico = async (idUsuario) => {
 	          LEFT JOIN estados AS es ON es.id = AT.idEstado
 	          LEFT JOIN canals AS ca ON ca.id = se.idcanal
 	          LEFT JOIN usuarios AS u ON u.id = AT.idUsuario 
+              LEFT JOIN equipos AS eq ON eq.id = asig.idEquipo
             WHERE
 	          AT.idEstado = 2
               AND AT.idUsuario = :xusuario
             GROUP BY
 	          AT.idUsuario,
-	          u.nombres,
-	          co.id,
-	          co.nombreComercio,
-	          co.longitud,
-	          co.latitud,
-	          ciu.nombre,
-	          se.id,
-	          se.nombre,
-	          ca.nombre,
-	          es.id,
-	          es.nombre;`
+              u.nombres,
+              co.id,
+              co.nombreComercio,
+              co.longitud,
+              co.latitud,
+              ciu.nombre,
+              se.id,
+              se.nombre,
+              ca.nombre,
+              es.id,
+              es.nombre;`
 
         const asignacion = await sequelize.query(sql, {
             replacements: {
@@ -417,6 +423,142 @@ const getAllListAsignacionesByTecnico = async (idUsuario) => {
     }
 }
 
+const getAllByTecnicoComercioEstadoServicioDetalle = async (idUsuario, idComercio, idEstado, idServicio) => {
+    try {
+        const sql = `
+            SELECT
+            AT.idUsuario,
+            u.nombres,
+            co.id AS idComercio,
+            co.nombreComercio,
+            co.nombreContacto,
+		    co.telefono,
+            co.longitud,
+            co.latitud,
+            ciu.nombre AS ciudad,
+            se.id AS idServicio,
+            se.nombre AS servicio,
+            ca.nombre AS canal,
+            es.id AS idEstado,
+            es.nombre AS estado,
+            asig.tipoProblema,
+            asig.interpretacion,
+            GROUP_CONCAT( AT.id SEPARATOR ', ' ) AS listAsignacionTecnicoIDs,
+            GROUP_CONCAT( eq.id SEPARATOR ', ' ) AS listEquiposIDs,
+            CONCAT(se.nombre, ' - ', ca.nombre) AS servicioCanal, -- Columna concatenada servicio - canal
+            GROUP_CONCAT(
+                CASE 
+                    WHEN ti.id IN (9, 10) THEN CONCAT(ti.nombre, ': pin=', eq.pin, '/puk=', eq.puk) -- Condición para tipos 9 y 10
+                    WHEN ti.id IN (3, 4) THEN CONCAT(ti.nombre, ': ns=', eq.noserie, '/ne=', eq.noimei) -- Condición para tipos 3 y 4
+                    ELSE CONCAT(ti.nombre, ': ns=', eq.noserie) -- Para el resto de los tipos de equipos
+                END
+                SEPARATOR ', '
+            ) AS listEquipos -- Listado condicional de equipos
+        FROM
+            asignaciontecnicos AS AT
+            LEFT JOIN asignacions AS asig ON asig.id = AT.idAsignacion
+            LEFT JOIN comercios AS co ON co.id = asig.idComercio
+            LEFT JOIN ciudads AS ciu ON ciu.id = co.idCiudad
+            LEFT JOIN servicios AS se ON se.id = asig.idServicio
+            LEFT JOIN estados AS es ON es.id = AT.idEstado
+            LEFT JOIN canals AS ca ON ca.id = se.idcanal
+            LEFT JOIN usuarios AS u ON u.id = AT.idUsuario
+            LEFT JOIN equipos AS eq ON eq.id = asig.idEquipo
+            LEFT JOIN tipoequipos AS ti ON ti.id = eq.idTipoEquipo 
+            WHERE
+                at.idEstado = asig.idEstado
+                AND at.idUsuario = :xusuario
+                AND co.id = :xcomercio
+                AND se.id = :xservicio
+                AND es.id = :xestado
+            GROUP BY
+            AT.idUsuario,
+            u.nombres,
+            co.id,
+            co.nombreComercio,
+            co.nombreContacto,
+		    co.telefono,
+            co.longitud,
+            co.latitud,
+            ciu.nombre,
+            se.id,
+            se.nombre,
+            ca.nombre,
+            es.id,
+            es.nombre,
+            asig.tipoProblema,
+            asig.interpretacion;`
+
+        const asignacion = await sequelize.query(sql, {
+            replacements: {
+                xusuario: idUsuario,
+                xcomercio: idComercio,
+                xestado: idEstado,
+                xservicio: idServicio
+            },
+            type: QueryTypes.SELECT
+        })
+        return asignacion
+    } catch (error) {
+        throw error
+    }
+}
+
+const changeStatusAsignacion = async (data) => {
+    const {
+        idEstado, // Nuevo estado
+        idEstadoAnterior, // Estado previo (opcional, para validar)
+        listAsignacionId, // IDs de Asignación como arreglo
+        listAsignacionTecnicoID // IDs de AsignaciónTécnico como arreglo
+    } = data;
+
+    const transaction = await db.sequelize.transaction(); // Iniciar transacción
+
+    try {
+        // Validar que los arrays no sean vacíos
+        if (!Array.isArray(listAsignacionId) || listAsignacionId.length === 0) {
+            throw new Error('El campo listAsignacionId debe ser un arreglo con al menos un elemento.');
+        }
+        if (!Array.isArray(listAsignacionTecnicoID) || listAsignacionTecnicoID.length === 0) {
+            throw new Error('El campo listAsignacionTecnicoID debe ser un arreglo con al menos un elemento.');
+        }
+
+        // Actualizar el estado en la tabla Asignacion
+        await Asignacion.update(
+            { idEstado }, // Nuevo estado
+            {
+                where: {
+                    id: listAsignacionId,
+                    ...(idEstadoAnterior && { idEstado: idEstadoAnterior }) // Validar el estado previo si se especifica
+                },
+                transaction // Asegurar que forma parte de la transacción
+            }
+        );
+
+        // Actualizar el estado en la tabla AsignacionTecnico
+        await AsignacionTecnico.update(
+            { idEstado }, // Nuevo estado
+            {
+                where: {
+                    id: listAsignacionTecnicoID,
+                    ...(idEstadoAnterior && { idEstado: idEstadoAnterior }) // Validar el estado previo si se especifica
+                },
+                transaction // Asegurar que forma parte de la transacción
+            }
+        );
+
+        // Confirmar transacción
+        await transaction.commit();
+
+        return { success: true, message: 'Estados actualizados correctamente' };
+    } catch (error) {
+        // Revertir transacción si algo falla
+        await transaction.rollback();
+        throw new Error(`Error actualizando los estados: ${error.message}`);
+    }
+}
+
+
 module.exports = {
     getAllAsignacionTecnico,
     getAsignacionTecnicoById,
@@ -429,4 +571,6 @@ module.exports = {
     getAllByTecnicoComercioEstadoServicio,
     cancelarAsignacion,
     getAllListAsignacionesByTecnico,
+    getAllByTecnicoComercioEstadoServicioDetalle,
+    changeStatusAsignacion,
 }
