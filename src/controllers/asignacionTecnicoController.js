@@ -166,6 +166,16 @@ const getAllListAsignacionesByTecnico = async (req, res, next) => {
     }
 }
 
+const getAllListAsignacionesProcesoByTecnico = async (req, res, next) => {
+    const { idUsuario } = req.params;
+    try {
+        const asignacionTecnico = await asignacionTecnicoService.getAllListAsignacionesProcesoByTecnico(idUsuario)
+        return res.status(200).json(asignacionTecnico)
+    } catch (error) {
+        next(error)
+    }
+}
+
 const changeStatusAsignacion = async (req, res, next) => {
     const {
         idEstado, // Nuevo estado
@@ -203,4 +213,5 @@ module.exports = {
     getAllListAsignacionesByTecnico,
     getAllByTecnicoComercioEstadoServicioDetalle,
     changeStatusAsignacion,
+    getAllListAsignacionesProcesoByTecnico,
 }

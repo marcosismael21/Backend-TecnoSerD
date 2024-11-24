@@ -20,6 +20,7 @@ router.delete('/:id', verifyToken, asignacionTecnicoController.deleteAsignacionT
 router.delete('/cancel/tcse/:idUsuario/:idComercio/:idServicio/:idEstado', verifyToken, asignacionTecnicoController.cancelarAsignacion)
 
 router.get('/lap/:idUsuario', verifyToken, asignacionTecnicoController.getAllListAsignacionesByTecnico)
+router.get('/lapr/:idUsuario', verifyToken, asignacionTecnicoController.getAllListAsignacionesProcesoByTecnico)
 
 //la exportacion
 

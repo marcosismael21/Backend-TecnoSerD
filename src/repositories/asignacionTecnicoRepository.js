@@ -423,6 +423,65 @@ const getAllListAsignacionesByTecnico = async (idUsuario) => {
     }
 }
 
+const getAllListAsignacionesProcesoByTecnico = async (idUsuario) => {
+    try {
+        const sql = `
+            SELECT AT
+	          .idUsuario,
+              GROUP_CONCAT(AT.idAsignacion SEPARATOR ', ') AS listAsignacionId,
+              GROUP_CONCAT(AT.id SEPARATOR ', ') AS listAsignacionTecnicoIDs,
+              GROUP_CONCAT(eq.id SEPARATOR ', ') AS listEquiposIDs,
+	          u.nombres AS tecnico,
+	          GROUP_CONCAT( AT.idAsignacion SEPARATOR ', ' ) AS listAsignacionId,
+	          co.id AS idComercio,
+	          co.nombreComercio AS nomComercio,
+	          co.longitud,
+	          co.latitud,
+	          ciu.nombre AS ciudad,
+	          se.id AS idServicio,
+	          se.nombre AS servicio,
+	          ca.nombre AS canal,
+	          es.id AS idEstado,
+	          es.nombre AS estado 
+            FROM
+	          asignaciontecnicos
+	          AS AT LEFT JOIN asignacions AS asig ON asig.id = AT.idAsignacion
+	          LEFT JOIN comercios AS co ON co.id = asig.idComercio
+	          LEFT JOIN ciudads AS ciu ON ciu.id = co.idCiudad
+	          LEFT JOIN servicios AS se ON se.id = asig.idServicio
+	          LEFT JOIN estados AS es ON es.id = AT.idEstado
+	          LEFT JOIN canals AS ca ON ca.id = se.idcanal
+	          LEFT JOIN usuarios AS u ON u.id = AT.idUsuario 
+              LEFT JOIN equipos AS eq ON eq.id = asig.idEquipo
+            WHERE
+	          AT.idEstado = 3
+              AND AT.idUsuario = :xusuario
+            GROUP BY
+	          AT.idUsuario,
+              u.nombres,
+              co.id,
+              co.nombreComercio,
+              co.longitud,
+              co.latitud,
+              ciu.nombre,
+              se.id,
+              se.nombre,
+              ca.nombre,
+              es.id,
+              es.nombre;`
+
+        const asignacion = await sequelize.query(sql, {
+            replacements: {
+                xusuario: idUsuario
+            },
+            type: QueryTypes.SELECT
+        })
+        return asignacion
+    } catch (error) {
+        throw error
+    }
+}
+
 const getAllByTecnicoComercioEstadoServicioDetalle = async (idUsuario, idComercio, idEstado, idServicio) => {
     try {
         const sql = `
@@ -432,6 +491,7 @@ const getAllByTecnicoComercioEstadoServicioDetalle = async (idUsuario, idComerci
             co.id AS idComercio,
             co.nombreComercio,
             co.nombreContacto,
+            co.rtn,
 		    co.telefono,
             co.longitud,
             co.latitud,
@@ -444,6 +504,7 @@ const getAllByTecnicoComercioEstadoServicioDetalle = async (idUsuario, idComerci
             asig.tipoProblema,
             asig.interpretacion,
             GROUP_CONCAT( AT.id SEPARATOR ', ' ) AS listAsignacionTecnicoIDs,
+            GROUP_CONCAT(AT.idAsignacion SEPARATOR ', ') AS listAsignacionId,
             GROUP_CONCAT( eq.id SEPARATOR ', ' ) AS listEquiposIDs,
             CONCAT(se.nombre, ' - ', ca.nombre) AS servicioCanal, -- Columna concatenada servicio - canal
             GROUP_CONCAT(
@@ -478,6 +539,7 @@ const getAllByTecnicoComercioEstadoServicioDetalle = async (idUsuario, idComerci
             co.nombreComercio,
             co.nombreContacto,
 		    co.telefono,
+            co.rtn,
             co.longitud,
             co.latitud,
             ciu.nombre,
@@ -573,4 +635,5 @@ module.exports = {
     getAllListAsignacionesByTecnico,
     getAllByTecnicoComercioEstadoServicioDetalle,
     changeStatusAsignacion,
+    getAllListAsignacionesProcesoByTecnico,
 }
