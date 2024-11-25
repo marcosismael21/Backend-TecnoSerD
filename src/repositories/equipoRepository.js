@@ -168,7 +168,7 @@ const getCantidadEquiposPorEstado = async () => {
     try {
         const query = `
             SELECT estado, COUNT(*) AS cantidad
-            FROM Equipos
+            FROM equipos
             GROUP BY estado;
         `;
         const [results, metadata] = await sequelize.query(query);
