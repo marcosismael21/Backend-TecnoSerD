@@ -12,6 +12,15 @@ const getAllUser = async () => {
 
 }
 
+const getAllUsersStatus = async (estado) => {
+    try {
+        const user = await userRepository.getAllUsersStatus(estado)
+        return (user) ? user : []
+    } catch (error) {
+        throw error
+    }
+}
+
 const getUserById = async (id) => {
     try {
         const user = await userRepository.getUserById(id,);
@@ -33,7 +42,7 @@ const createUser = async (data) => {
             // Si el usuario ya existe, retornar un mensaje o lanzar un error
             return { success: false, message: "El nombre de usuario ya existe" };
         }
-        
+
         const user = await userRepository.createUser(data);
         return (user) ? user : [];
     } catch (error) {
@@ -106,6 +115,15 @@ const login = async (data, res) => {
     }
 }
 
+const getAllUserByRol = async () =>{
+    try {
+        const user = await userRepository.getAllUserByRol()
+        return (user) ? user : []
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllUser,
     getUserById,
@@ -113,5 +131,6 @@ module.exports = {
     updateUser,
     deleteUser,
     login,
-
+    getAllUsersStatus,
+    getAllUserByRol,
 }
