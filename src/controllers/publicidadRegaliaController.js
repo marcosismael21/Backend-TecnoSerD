@@ -77,10 +77,20 @@ const deletePublicidad_Regalia = async (req, res, next) => {
     }
 }
 
+const getPublicidad = async (req, res, next) => {
+    try {
+        const publicidad = await publicidadRegaliaService.getPublicidad()
+        return res.status(200).json(publicidad)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllPublicidad_Regalia,
     getPublicidad_RegaliaById,
     createPublicidad_Regalia,
     updatePublicidad_Regalia,
     deletePublicidad_Regalia,
+    getPublicidad,
 }

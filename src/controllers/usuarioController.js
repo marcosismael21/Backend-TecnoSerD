@@ -52,7 +52,7 @@ const createUser = async (req, res, next) => {
 
     try {
         const user = await userService.createUser(data);
-        return res.status(200).json({user, message:'Se creo correctamente.'});
+        return res.status(200).json({ user, message: 'Se creo correctamente.' });
     } catch (error) {
         next(error);
     }
@@ -79,7 +79,7 @@ const updateUser = async (req, res, next) => {
 
     try {
         const user = await userService.updateUser(data, id);
-        return res.status(200).json({user, message:'Se actualizo correctamente.'});
+        return res.status(200).json({ user, message: 'Se actualizo correctamente.' });
     } catch (error) {
         next(error);
     }
@@ -97,7 +97,7 @@ const changeStatusTrue = async (req, res, next) => {
 
     try {
         const user = await userService.updateUser(data, id);
-        return res.status(200).json({user, message:'Se actualizo corectamente'});
+        return res.status(200).json({ user, message: 'Se actualizo corectamente' });
     } catch (error) {
         next(error);
     }
@@ -107,7 +107,7 @@ const deleteUser = async (req, res, next) => {
     const id = req.params.id;
     try {
         const user = await userService.deleteUser(id);
-        return res.status(200).json({user, message: 'Se elimino correctamente.'});
+        return res.status(200).json({ user, message: 'Se elimino correctamente.' });
     } catch (error) {
         next(error);
     }
@@ -120,27 +120,34 @@ const login = async (req, res, next) => {
         const {
             usuario,
             pass
-        } = req.body
+        } = req.body;
 
         const data = {
             usuario,
             pass
-        }
+        };
 
         const {
             authenticated,
             userData,
             token,
             expiresIn
-        } = await userService.login(data, res)
+        } = await userService.login(data, res);
 
         if (authenticated) {
-
             // Establecer la cookie con el token JWT
             res.cookie("token", token, {
                 httpOnly: true, // Para prevenir acceso al token desde JavaScript del cliente
                 secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
                 maxAge: expiresIn * 1000, // Duración en milisegundos
+                sameSite: 'None' // Asegurar que la cookie se envíe en contextos de terceros
+            });
+
+            // Establecer la cookie con el rol del usuario
+            res.cookie("role", userData.idrol, {
+                secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
+                maxAge: expiresIn * 1000, // Duración en milisegundos
+                sameSite: 'None' // Asegurar que la cookie se envíe en contextos de terceros
             });
 
             return res.status(200).json({
@@ -150,7 +157,7 @@ const login = async (req, res, next) => {
                 authenticated,
                 token,
                 expiresIn
-            })
+            });
         }
 
         return res.status(200).send({
@@ -158,19 +165,34 @@ const login = async (req, res, next) => {
             data: null,
             authenticated,
             mensage: "Usuario o clave incorrectos"
-        })
+        });
 
     } catch (error) {
-        res.status(500).send('Error al intentar iniciar sesion:' + error)
-        next(error)
+        res.status(500).send('Error al intentar iniciar sesion:' + error);
+        next(error);
     }
-
 }
+
 
 const logout = async (req, res, next) => {
     try {
         // Eliminar la cookie con el token JWT
         res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
+        });
+
+        res.clearCookie("userData", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
+        });
+
+        res.clearCookie("rol", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
+        });
+
+        res.clearCookie("id", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
         });

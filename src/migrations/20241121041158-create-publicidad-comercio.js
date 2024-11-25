@@ -2,18 +2,24 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('PublicidadClientes', {
+    await queryInterface.createTable('publicidadComercios', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      idPublicidad: {
+      idPublicidadRegalia: {
         type: Sequelize.INTEGER
       },
-      idCliente: {
+      idComercio: {
         type: Sequelize.INTEGER
+      },
+      cantidad: {
+        type: Sequelize.INTEGER
+      },
+      estado: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -26,6 +32,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('PublicidadClientes');
+    await queryInterface.dropTable('publicidadComercios');
   }
 };

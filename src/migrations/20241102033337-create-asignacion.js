@@ -21,6 +21,9 @@ module.exports = {
       tipoProblema: {
         type: Sequelize.STRING
       },
+      interpretacion: {
+        type: Sequelize.STRING
+      },
       idEstado: {
         type: Sequelize.INTEGER
       },

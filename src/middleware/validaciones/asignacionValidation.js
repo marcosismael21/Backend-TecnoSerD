@@ -11,6 +11,9 @@ const asignacionValidationRules=()=>{
         body('tipoProblema').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
             max: 255
         }).withMessage('Debe tener menos de 255 caracteres'),
+        body('interpretacion').notEmpty().withMessage("El campo es obligatorio").isString().isLength({
+            max: 255
+        }).withMessage('Debe tener menos de 255 caracteres'),
         body('idEstado').notEmpty().withMessage("El campo es obligatorio").isInt().withMessage("Debe ser un numero entero")
     ];
 }

@@ -10,9 +10,11 @@ router.put('/t', verifyToken, asignacionController.updateAsignacionConTransaccio
 router.get('/', verifyToken, asignacionController.getAllAsignacion)
 router.get('/:id', verifyToken, asignacionController.getAsignacionById)
 router.get('/ces/:idComercio/:idEstado/:idServicio', verifyToken, asignacionController.getAllByComercioEstadoServicio)
+router.get('/s/:idEstado', verifyToken, asignacionController.getAllAsignacionByIdEstado)
 router.post('/', [verifyToken, asignacionValidationRules(), validate], asignacionController.createAsignacion)
 router.put('/:id', [verifyToken, asignacionValidationRules(), validate], asignacionController.updateAsignacion)
 router.delete('/:id', verifyToken, asignacionController.deleteAsignacion)
+router.delete('/cse/:idComercio/:idServicio/:idEstado', verifyToken, asignacionController.deleteAsignacionTransaction)
 
 //la exportacion
 

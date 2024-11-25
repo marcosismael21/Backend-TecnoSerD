@@ -73,6 +73,7 @@ const createComercioConEquiposYAsignacionById = async (comercioid, equipos, Tipo
                 idEquipo: equipo.id,
                 idEstado: 1, // idEstado siempre será 1
                 tipoProblema: TipoProblema,
+                interpretacion: '',
                 idServicio: idServicio
             }, { transaction });
         }

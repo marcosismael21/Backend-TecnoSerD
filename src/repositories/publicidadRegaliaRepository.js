@@ -1,4 +1,6 @@
 const db = require('../models')
+const { Op } = require('sequelize')
+const TipoComercio = db.TipoComercio
 const Publicidad_Regalia = db.PublicidadRegalia
 
 const {
@@ -6,7 +8,8 @@ const {
 } = require("../models");
 const {
     QueryTypes,
-    Transaction
+    Transaction,
+    where
 } = require('sequelize');
 
 const getAllPublicidad_Regalia = async () => {
@@ -14,7 +17,8 @@ const getAllPublicidad_Regalia = async () => {
 
         const q = `SELECT
 	                p.*,
-	                tc.nombre AS idTipoComercio 
+	                tc.nombre AS idTipoComercio,
+                    CONCAT(p.nombre, ' - ', tc.nombre) AS nombrePublicidadRegalia
                     FROM
 	                publicidadregalia AS p
 	                LEFT JOIN tipocomercios AS tc ON tc.id = p.idTipoComercio`
@@ -76,12 +80,36 @@ const deletePublicidad_Regalia = async (id) => {
     }
 }
 
+const getPublicidad = async () => {
+    try {
 
+        const sql = `
+                SELECT
+	                p.*,
+	                tc.nombre AS idTipoComercio,
+	                CONCAT( p.nombre, ' - ', tc.nombre ) AS nombrePublicidadRegalia 
+                FROM
+	                publicidadregalia AS p
+	                LEFT JOIN tipocomercios AS tc ON tc.id = p.idTipoComercio 
+                WHERE
+	                p.cantidad > 0 
+	                AND p.estado = 1`
+
+        const publicidad_regalia = await sequelize.query(sql, {
+            type: QueryTypes.SELECT
+        })
+
+        return publicidad_regalia
+    } catch (error) {
+        throw error
+    }
+}
 
 module.exports = {
     getAllPublicidad_Regalia,
     getPublicidad_RegaliaById,
     createPublicidad_Regalia,
     updatePublicidad_Regalia,
-    deletePublicidad_Regalia
+    deletePublicidad_Regalia,
+    getPublicidad
 }
