@@ -21,7 +21,7 @@ const importExcelDataUnificado = async (buffer) => {
             // Buscar la ciudad en la base de datos por nombre y estado activo
             const ciudad = await Ciudad.findOne({
                 where: {
-                    nombre: row['CIUDAD'], // Buscar por 'nombre' en Ciudad
+                    nombre: row['CIUDAD'].trim(), // Añadir trim() para eliminar espacios y Buscar por 'nombre' en Ciudad
                     estado: 1 // Solo ciudades activas
                 }
             });
