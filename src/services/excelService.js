@@ -9,10 +9,11 @@ const Servicio = db.Servicio;
 
 const importExcelDataUnificado = async (buffer) => {
     try {
+        // Leer el archivo Excel
         const workbook = xlsx.read(buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const excelData =  xlsx.utils.sheet_to_json(sheet, { raw: false, defval: '' });
+        const excelData = xlsx.utils.sheet_to_json(sheet, { raw: false, defval: '' });
 
         const fechaActual = new Date(); // Fecha de llegada actual
         const processedComercios = {}; // Para rastrear comercios y servicios procesados
@@ -21,7 +22,7 @@ const importExcelDataUnificado = async (buffer) => {
             // Buscar la ciudad en la base de datos por nombre y estado activo
             const ciudad = await Ciudad.findOne({
                 where: {
-                    nombre: row['CIUDAD'].trim(), // Añadir trim() para eliminar espacios y Buscar por 'nombre' en Ciudad
+                    nombre: row['CIUDAD'].trim(), // Añadido trim() para eliminar espacios
                     estado: 1 // Solo ciudades activas
                 }
             });
@@ -29,14 +30,15 @@ const importExcelDataUnificado = async (buffer) => {
             // Buscar el tipo de comercio en la base de datos por nombre y estado activo
             const tipoComercio = await TipoComercio.findOne({
                 where: {
-                    nombre: row['Tipo de Comercio'], // Buscar por 'nombre' en TipoComercio
-                    estado: 1  // Solo tipos de comercio activos
+                    nombre: row['Tipo de Comercio'],
+                    estado: 1 // Solo tipos de comercio activos
                 }
             });
 
             const numTienda = row['ID TIENDA'] ? row['ID TIENDA'] : 0;
             const numUsuario = row['USUARIO'] ? row['USUARIO'] : 0;
 
+            // Buscar el proveedor por canal
             const proveedor = await Proveedor.findOne({
                 where: {
                     nombre: row['CANAL'],
@@ -48,6 +50,7 @@ const importExcelDataUnificado = async (buffer) => {
                 throw new Error(`Proveedor no encontrado para el canal: ${row['CANAL']}`);
             }
 
+            // Preparar datos del comercio
             const comercioData = {
                 nombreComercio: row['Nombre de Comercio'],
                 rtn: row['RTN'],
@@ -63,6 +66,8 @@ const importExcelDataUnificado = async (buffer) => {
             };
 
             const equipos = [];
+            
+            // Procesar terminal D2 MINI
             let tipoTerminal = row['TIPO DE TERMINAL'] ? row['TIPO DE TERMINAL'].toUpperCase() : '';
             tipoTerminal = tipoTerminal.includes('SUNMI') ? tipoTerminal.replace('SUNMI ', '') : tipoTerminal;
 
@@ -75,7 +80,7 @@ const importExcelDataUnificado = async (buffer) => {
                     }
                 });
 
-                equipos.push({
+                const equipoD2Mini = {
                     idTipoEquipo: tipoEquipoD2Mini.id,
                     noserie: row['SN'],
                     noimei: row['IMEI'],
@@ -84,9 +89,17 @@ const importExcelDataUnificado = async (buffer) => {
                     fechaLlegada: fechaActual,
                     comodin: false,
                     estado: true
-                });
+                };
+
+                // Verificar si el equipo ya existe
+                const existingEquipo = await excelRepository.getEquiposByDetails(equipoD2Mini);
+                if (existingEquipo) {
+                    equipoD2Mini.id = existingEquipo.id;
+                }
+                equipos.push(equipoD2Mini);
             }
 
+            // Procesar otros tipos de equipos
             const tiposDeEquipo = [
                 { nombre: 'QPOS', columna: 'QPOS' },
                 { nombre: 'Power Bank', columna: 'Power Bank SN' },
@@ -106,7 +119,7 @@ const importExcelDataUnificado = async (buffer) => {
                         }
                     });
 
-                    equipos.push({
+                    const equipoData = {
                         idTipoEquipo: tipoEquipo.id,
                         noserie: String(noserie),
                         noimei: 0,
@@ -115,10 +128,18 @@ const importExcelDataUnificado = async (buffer) => {
                         fechaLlegada: fechaActual,
                         comodin: false,
                         estado: true
-                    });
+                    };
+
+                    // Verificar si el equipo ya existe
+                    const existingEquipo = await excelRepository.getEquiposByDetails(equipoData);
+                    if (existingEquipo) {
+                        equipoData.id = existingEquipo.id;
+                    }
+                    equipos.push(equipoData);
                 }
             }
 
+            // Procesar chip (TIGO o CLARO)
             const compania = row['Compañía'] ? row['Compañía'].toUpperCase() : '';
             const pin = row['PIN'] || 0;
             const puk = row['PUK'] || 0;
@@ -132,7 +153,7 @@ const importExcelDataUnificado = async (buffer) => {
                     }
                 });
 
-                equipos.push({
+                const equipoChip = {
                     idTipoEquipo: tipoEquipoChip.id,
                     noserie: 0,
                     noimei: 0,
@@ -141,14 +162,21 @@ const importExcelDataUnificado = async (buffer) => {
                     fechaLlegada: fechaActual,
                     comodin: false,
                     estado: true
-                });
+                };
+
+                // Verificar si el chip ya existe
+                const existingEquipo = await excelRepository.getEquiposByDetails(equipoChip);
+                if (existingEquipo) {
+                    equipoChip.id = existingEquipo.id;
+                }
+                equipos.push(equipoChip);
             }
 
-            // Extraer idServicio desde "Tipo de Gestion" y "CANAL"
+            // Buscar el servicio
             const servicio = await Servicio.findOne({
                 where: {
                     nombre: row['Tipo de Gestion'],
-                    idcanal: proveedor.id, // Relacionamos con el proveedor encontrado
+                    idcanal: proveedor.id,
                     estado: 1
                 }
             });
@@ -161,17 +189,19 @@ const importExcelDataUnificado = async (buffer) => {
 
             // Verificar si el comercio ya ha sido procesado con el mismo servicio
             const comercioKey = `${comercioData.nombreComercio}-${servicio.id}`;
-            console.log(`Processing comercioKey: ${comercioKey}`); // Debugging line
             if (processedComercios[comercioKey]) {
                 // Marcar equipos como comodines
-                equipos.forEach(equipo => equipo.comodin = 1);
-                await excelRepository.createEquipos(equipos)
+                equipos.forEach(equipo => equipo.comodin = true);
+                for (let equipoData of equipos) {
+                    if (!equipoData.id) { // Solo crear si no existe
+                        await excelRepository.createEquipos([equipoData]);
+                    }
+                }
             } else {
                 // Marcar el comercio como procesado con este servicio
                 processedComercios[comercioKey] = true;
-                console.log(`Marking comercio as processed: ${comercioKey}`); // Debugging line
 
-                // Verificar si el comercio ya existe en la base de datos
+                // Verificar si el comercio ya existe
                 let comercioId = await excelRepository.getComercioExistente(comercioData.rtn, comercioData.nombreComercio);
                 if (!comercioId) {
                     // Crear el comercio si no existe
@@ -183,7 +213,7 @@ const importExcelDataUnificado = async (buffer) => {
             }
         }
     } catch (error) {
-        console.error(error); // Debugging line
+        console.error(error);
         throw error;
     }
 };
