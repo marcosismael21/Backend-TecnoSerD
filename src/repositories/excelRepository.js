@@ -10,13 +10,11 @@ const createComercioConEquiposYAsignacion = async (comercioData, equipos, TipoPr
         
         for (let equipoData of equipos) {
             let equipo;
-            // Buscar equipo existente
             const existingEquipo = await getEquiposByDetails(equipoData);
             
             if (existingEquipo) {
                 equipo = existingEquipo;
             } else {
-                // Crear nuevo equipo sin especificar ID
                 equipo = await Equipo.create({
                     idTipoEquipo: equipoData.idTipoEquipo,
                     noserie: equipoData.noserie,
@@ -41,34 +39,6 @@ const createComercioConEquiposYAsignacion = async (comercioData, equipos, TipoPr
         await transaction.commit();
     } catch (error) {
         await transaction.rollback();
-        throw error;
-    }
-};
-
-const getComercioExistente = async (rtn, nombreComercio) => {
-    try {
-        const comercio = await Comercio.findOne({
-            where: {
-                rtn: rtn,
-                nombreComercio: nombreComercio
-            }
-        })
-        return comercio
-    } catch (error) {
-        throw error
-    }
-}
-
-// Función para verificar si un equipo ya existe por número de serie (noserie)
-const getEquipoByNoSerie = async (noserie) => {
-    try {
-        const equipo = await Equipo.findOne({
-            where: {
-                noserie: noserie
-            }
-        });
-        return equipo;
-    } catch (error) {
         throw error;
     }
 };
@@ -111,30 +81,18 @@ const createComercioConEquiposYAsignacionById = async (comercioId, equipos, Tipo
     }
 };
 
-const createEquipos = async (equipos) => {
+const getComercioExistente = async (rtn, nombreComercio) => {
     try {
-        for (let equipoData of equipos) {
-            await Equipo.create(equipoData);
-        }
-    } catch (error) {
-        throw error
-    }
-}
-
-const getEquipos = async (equipos) => {
-    try {
-        const { idTipoEquipo, noserie } = equipos
-        const equipo = await Equipo.findOne({
-            where:{
-                idTipoEquipo: idTipoEquipo,
-                noserie: noserie,
+        return await Comercio.findOne({
+            where: {
+                rtn: rtn,
+                nombreComercio: nombreComercio
             }
-        })
-        return equipo
+        });
     } catch (error) {
-        throw error
+        throw error;
     }
-}
+};
 
 const getEquiposByDetails = async (equipoData) => {
     const { idTipoEquipo, noserie, noimei, pin, puk } = equipoData;
@@ -151,14 +109,22 @@ const getEquiposByDetails = async (equipoData) => {
     } catch (error) {
         throw error;
     }
-}
+};
+
+const createEquipos = async (equipos) => {
+    try {
+        for (let equipoData of equipos) {
+            await Equipo.create(equipoData);
+        }
+    } catch (error) {
+        throw error;
+    }
+};
 
 module.exports = {
     getComercioExistente,
-    getEquipoByNoSerie,
     createComercioConEquiposYAsignacion,
     createComercioConEquiposYAsignacionById,
     createEquipos,
-    getEquipos,
     getEquiposByDetails,
 }

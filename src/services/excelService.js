@@ -7,38 +7,59 @@ const TipoEquipo = db.TipoEquipo;
 const Proveedor = db.Proveedor;
 const Servicio = db.Servicio;
 
+const formatLargeNumber = (value) => {
+    if (!value) return '';
+    // Convertir a string y eliminar cualquier espacio
+    const strValue = value.toString().trim()
+
+    // Si es notación científica
+    if (strValue.includes('e')) {
+        const [mantissa, exponent] = strValue.split('e');
+        const decimalStr = mantissa.replace('.', '');
+        const exp = parseInt(exponent);
+        let result = decimalStr;
+        while (result.length <= exp) {
+            result += '0';
+        }
+        return result
+    }
+
+    // Si es un número normal pero tiene decimales
+    if (strValue.includes('.')) {
+        return strValue.split('.')[0];
+    }
+
+    return strValue;
+}
+
 const importExcelDataUnificado = async (buffer) => {
     try {
-        // Leer el archivo Excel
         const workbook = xlsx.read(buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const excelData = xlsx.utils.sheet_to_json(sheet, { raw: false, defval: '' });
 
-        const fechaActual = new Date(); // Fecha de llegada actual
-        const processedComercios = {}; // Para rastrear comercios y servicios procesados
+        const fechaActual = new Date();
+        const processedComercios = {};
 
         for (let row of excelData) {
-            // Buscar la ciudad en la base de datos por nombre y estado activo
             const ciudad = await Ciudad.findOne({
                 where: {
-                    nombre: row['CIUDAD'].trim(), // Añadido trim() para eliminar espacios
-                    estado: 1 // Solo ciudades activas
+                    nombre: row['CIUDAD'].trim(),
+                    estado: 1
                 }
             });
 
-            // Buscar el tipo de comercio en la base de datos por nombre y estado activo
             const tipoComercio = await TipoComercio.findOne({
                 where: {
                     nombre: row['Tipo de Comercio'],
-                    estado: 1 // Solo tipos de comercio activos
+                    estado: 1
                 }
             });
 
             const numTienda = row['ID TIENDA'] ? row['ID TIENDA'] : 0;
             const numUsuario = row['USUARIO'] ? row['USUARIO'] : 0;
 
-            // Buscar el proveedor por canal
             const proveedor = await Proveedor.findOne({
                 where: {
                     nombre: row['CANAL'],
@@ -50,7 +71,6 @@ const importExcelDataUnificado = async (buffer) => {
                 throw new Error(`Proveedor no encontrado para el canal: ${row['CANAL']}`);
             }
 
-            // Preparar datos del comercio
             const comercioData = {
                 nombreComercio: row['Nombre de Comercio'],
                 rtn: row['RTN'],
@@ -66,8 +86,6 @@ const importExcelDataUnificado = async (buffer) => {
             };
 
             const equipos = [];
-            
-            // Procesar terminal D2 MINI
             let tipoTerminal = row['TIPO DE TERMINAL'] ? row['TIPO DE TERMINAL'].toUpperCase() : '';
             tipoTerminal = tipoTerminal.includes('SUNMI') ? tipoTerminal.replace('SUNMI ', '') : tipoTerminal;
 
@@ -91,7 +109,6 @@ const importExcelDataUnificado = async (buffer) => {
                     estado: true
                 };
 
-                // Verificar si el equipo ya existe
                 const existingEquipo = await excelRepository.getEquiposByDetails(equipoD2Mini);
                 if (existingEquipo) {
                     equipoD2Mini.id = existingEquipo.id;
@@ -99,7 +116,6 @@ const importExcelDataUnificado = async (buffer) => {
                 equipos.push(equipoD2Mini);
             }
 
-            // Procesar otros tipos de equipos
             const tiposDeEquipo = [
                 { nombre: 'QPOS', columna: 'QPOS' },
                 { nombre: 'Power Bank', columna: 'Power Bank SN' },
@@ -109,8 +125,8 @@ const importExcelDataUnificado = async (buffer) => {
             ];
 
             for (let tipo of tiposDeEquipo) {
-                const noserie = row[tipo.columna] ? String(row[tipo.columna]) : '';
-                if (noserie) {
+                const valorOriginal = row[tipo.columna];
+                if (valorOriginal) {
                     const tipoEquipo = await TipoEquipo.findOne({
                         where: {
                             nombre: tipo.nombre.toLowerCase(),
@@ -119,9 +135,17 @@ const importExcelDataUnificado = async (buffer) => {
                         }
                     });
 
+                    // Formatear el número serie según el tipo de equipo
+                    let noserie;
+                    if (tipo.nombre === 'QPOS') {
+                        noserie = formatLargeNumber(valorOriginal);
+                    } else {
+                        noserie = String(valorOriginal);
+                    }
+
                     const equipoData = {
                         idTipoEquipo: tipoEquipo.id,
-                        noserie: String(noserie),
+                        noserie: noserie,
                         noimei: 0,
                         pin: 0,
                         puk: 0,
@@ -130,7 +154,6 @@ const importExcelDataUnificado = async (buffer) => {
                         estado: true
                     };
 
-                    // Verificar si el equipo ya existe
                     const existingEquipo = await excelRepository.getEquiposByDetails(equipoData);
                     if (existingEquipo) {
                         equipoData.id = existingEquipo.id;
@@ -139,7 +162,6 @@ const importExcelDataUnificado = async (buffer) => {
                 }
             }
 
-            // Procesar chip (TIGO o CLARO)
             const compania = row['Compañía'] ? row['Compañía'].toUpperCase() : '';
             const pin = row['PIN'] || 0;
             const puk = row['PUK'] || 0;
@@ -164,7 +186,6 @@ const importExcelDataUnificado = async (buffer) => {
                     estado: true
                 };
 
-                // Verificar si el chip ya existe
                 const existingEquipo = await excelRepository.getEquiposByDetails(equipoChip);
                 if (existingEquipo) {
                     equipoChip.id = existingEquipo.id;
@@ -172,7 +193,6 @@ const importExcelDataUnificado = async (buffer) => {
                 equipos.push(equipoChip);
             }
 
-            // Buscar el servicio
             const servicio = await Servicio.findOne({
                 where: {
                     nombre: row['Tipo de Gestion'],
@@ -187,27 +207,20 @@ const importExcelDataUnificado = async (buffer) => {
 
             const TipoProblemaData = row['Tipo de Problema'] ? row['Tipo de Problema'] : '';
 
-            // Verificar si el comercio ya ha sido procesado con el mismo servicio
             const comercioKey = `${comercioData.nombreComercio}-${servicio.id}`;
             if (processedComercios[comercioKey]) {
-                // Marcar equipos como comodines
                 equipos.forEach(equipo => equipo.comodin = true);
                 for (let equipoData of equipos) {
-                    if (!equipoData.id) { // Solo crear si no existe
+                    if (!equipoData.id) {
                         await excelRepository.createEquipos([equipoData]);
                     }
                 }
             } else {
-                // Marcar el comercio como procesado con este servicio
                 processedComercios[comercioKey] = true;
-
-                // Verificar si el comercio ya existe
                 let comercioId = await excelRepository.getComercioExistente(comercioData.rtn, comercioData.nombreComercio);
                 if (!comercioId) {
-                    // Crear el comercio si no existe
                     await excelRepository.createComercioConEquiposYAsignacion(comercioData, equipos, TipoProblemaData, servicio.id);
                 } else {
-                    // Asignar equipos al comercio existente
                     await excelRepository.createComercioConEquiposYAsignacionById(comercioId.id, equipos, TipoProblemaData, servicio.id);
                 }
             }
