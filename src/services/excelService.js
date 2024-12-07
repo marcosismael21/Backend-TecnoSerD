@@ -7,30 +7,53 @@ const TipoEquipo = db.TipoEquipo;
 const Proveedor = db.Proveedor;
 const Servicio = db.Servicio;
 
+const formatLargeNumber = (value) => {
+    if (!value) return '';
+    // Convertir a string y eliminar cualquier espacio
+    const strValue = value.toString().trim()
+
+    // Si es notación científica
+    if (strValue.includes('e')) {
+        const [mantissa, exponent] = strValue.split('e');
+        const decimalStr = mantissa.replace('.', '');
+        const exp = parseInt(exponent);
+        let result = decimalStr;
+        while (result.length <= exp) {
+            result += '0';
+        }
+        return result
+    }
+
+    // Si es un número normal pero tiene decimales
+    if (strValue.includes('.')) {
+        return strValue.split('.')[0];
+    }
+
+    return strValue;
+}
+
 const importExcelDataUnificado = async (buffer) => {
     try {
         const workbook = xlsx.read(buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const excelData =  xlsx.utils.sheet_to_json(sheet, { raw: false, defval: '' });
+        const excelData = xlsx.utils.sheet_to_json(sheet, { raw: false, defval: '' });
 
-        const fechaActual = new Date(); // Fecha de llegada actual
-        const processedComercios = {}; // Para rastrear comercios y servicios procesados
+        const fechaActual = new Date();
+        const processedComercios = {};
 
         for (let row of excelData) {
-            // Buscar la ciudad en la base de datos por nombre y estado activo
             const ciudad = await Ciudad.findOne({
                 where: {
-                    nombre: row['CIUDAD'], // Buscar por 'nombre' en Ciudad
-                    estado: 1 // Solo ciudades activas
+                    nombre: row['CIUDAD'].trim(),
+                    estado: 1
                 }
             });
 
-            // Buscar el tipo de comercio en la base de datos por nombre y estado activo
             const tipoComercio = await TipoComercio.findOne({
                 where: {
-                    nombre: row['Tipo de Comercio'], // Buscar por 'nombre' en TipoComercio
-                    estado: 1  // Solo tipos de comercio activos
+                    nombre: row['Tipo de Comercio'],
+                    estado: 1
                 }
             });
 
@@ -75,7 +98,7 @@ const importExcelDataUnificado = async (buffer) => {
                     }
                 });
 
-                equipos.push({
+                const equipoD2Mini = {
                     idTipoEquipo: tipoEquipoD2Mini.id,
                     noserie: row['SN'],
                     noimei: row['IMEI'],
@@ -84,7 +107,13 @@ const importExcelDataUnificado = async (buffer) => {
                     fechaLlegada: fechaActual,
                     comodin: false,
                     estado: true
-                });
+                };
+
+                const existingEquipo = await excelRepository.getEquiposByDetails(equipoD2Mini);
+                if (existingEquipo) {
+                    equipoD2Mini.id = existingEquipo.id;
+                }
+                equipos.push(equipoD2Mini);
             }
 
             const tiposDeEquipo = [
@@ -96,8 +125,8 @@ const importExcelDataUnificado = async (buffer) => {
             ];
 
             for (let tipo of tiposDeEquipo) {
-                const noserie = row[tipo.columna] ? String(row[tipo.columna]) : '';
-                if (noserie) {
+                const valorOriginal = row[tipo.columna];
+                if (valorOriginal) {
                     const tipoEquipo = await TipoEquipo.findOne({
                         where: {
                             nombre: tipo.nombre.toLowerCase(),
@@ -106,16 +135,30 @@ const importExcelDataUnificado = async (buffer) => {
                         }
                     });
 
-                    equipos.push({
+                    // Formatear el número serie según el tipo de equipo
+                    let noserie;
+                    if (tipo.nombre === 'QPOS') {
+                        noserie = formatLargeNumber(valorOriginal);
+                    } else {
+                        noserie = String(valorOriginal);
+                    }
+
+                    const equipoData = {
                         idTipoEquipo: tipoEquipo.id,
-                        noserie: String(noserie),
+                        noserie: noserie,
                         noimei: 0,
                         pin: 0,
                         puk: 0,
                         fechaLlegada: fechaActual,
                         comodin: false,
                         estado: true
-                    });
+                    };
+
+                    const existingEquipo = await excelRepository.getEquiposByDetails(equipoData);
+                    if (existingEquipo) {
+                        equipoData.id = existingEquipo.id;
+                    }
+                    equipos.push(equipoData);
                 }
             }
 
@@ -132,7 +175,7 @@ const importExcelDataUnificado = async (buffer) => {
                     }
                 });
 
-                equipos.push({
+                const equipoChip = {
                     idTipoEquipo: tipoEquipoChip.id,
                     noserie: 0,
                     noimei: 0,
@@ -141,14 +184,19 @@ const importExcelDataUnificado = async (buffer) => {
                     fechaLlegada: fechaActual,
                     comodin: false,
                     estado: true
-                });
+                };
+
+                const existingEquipo = await excelRepository.getEquiposByDetails(equipoChip);
+                if (existingEquipo) {
+                    equipoChip.id = existingEquipo.id;
+                }
+                equipos.push(equipoChip);
             }
 
-            // Extraer idServicio desde "Tipo de Gestion" y "CANAL"
             const servicio = await Servicio.findOne({
                 where: {
                     nombre: row['Tipo de Gestion'],
-                    idcanal: proveedor.id, // Relacionamos con el proveedor encontrado
+                    idcanal: proveedor.id,
                     estado: 1
                 }
             });
@@ -159,31 +207,26 @@ const importExcelDataUnificado = async (buffer) => {
 
             const TipoProblemaData = row['Tipo de Problema'] ? row['Tipo de Problema'] : '';
 
-            // Verificar si el comercio ya ha sido procesado con el mismo servicio
             const comercioKey = `${comercioData.nombreComercio}-${servicio.id}`;
-            console.log(`Processing comercioKey: ${comercioKey}`); // Debugging line
             if (processedComercios[comercioKey]) {
-                // Marcar equipos como comodines
-                equipos.forEach(equipo => equipo.comodin = 1);
-                await excelRepository.createEquipos(equipos)
+                equipos.forEach(equipo => equipo.comodin = true);
+                for (let equipoData of equipos) {
+                    if (!equipoData.id) {
+                        await excelRepository.createEquipos([equipoData]);
+                    }
+                }
             } else {
-                // Marcar el comercio como procesado con este servicio
                 processedComercios[comercioKey] = true;
-                console.log(`Marking comercio as processed: ${comercioKey}`); // Debugging line
-
-                // Verificar si el comercio ya existe en la base de datos
                 let comercioId = await excelRepository.getComercioExistente(comercioData.rtn, comercioData.nombreComercio);
                 if (!comercioId) {
-                    // Crear el comercio si no existe
                     await excelRepository.createComercioConEquiposYAsignacion(comercioData, equipos, TipoProblemaData, servicio.id);
                 } else {
-                    // Asignar equipos al comercio existente
                     await excelRepository.createComercioConEquiposYAsignacionById(comercioId.id, equipos, TipoProblemaData, servicio.id);
                 }
             }
         }
     } catch (error) {
-        console.error(error); // Debugging line
+        console.error(error);
         throw error;
     }
 };
