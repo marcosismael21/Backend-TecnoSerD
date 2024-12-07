@@ -68,10 +68,10 @@ const getServiciosPorCiudad = async () => {
     try {
         const query = `
             SELECT c.nombre, s.nombre AS servicio, COUNT(DISTINCT a.idComercio) AS cantidad
-            FROM Asignacions a
-            LEFT JOIN Servicios s ON a.idServicio = s.id
-            LEFT JOIN Comercios co ON a.idComercio = co.id
-            LEFT JOIN Ciudads c ON co.idCiudad = c.id
+            FROM asignacions a
+            LEFT JOIN servicios s ON a.idServicio = s.id
+            LEFT JOIN comercios co ON a.idComercio = co.id
+            LEFT JOIN ciudads c ON co.idCiudad = c.id
             WHERE a.idEstado = 4
             GROUP BY c.nombre, s.nombre
             ORDER BY c.nombre, s.nombre;
@@ -91,7 +91,7 @@ const getAsignacionesPorEstado = async () => {
             e.nombre AS estado,
             COUNT(DISTINCT a.idComercio) AS cantidad
             FROM asignacions a
-            LEFT JOIN Estados e ON a.idEstado = e.id
+            LEFT JOIN estados e ON a.idEstado = e.id
             GROUP BY a.idEstado, e.nombre
             ORDER BY e.nombre;
         `;
@@ -111,8 +111,8 @@ const getCrecimientoEquiposPorEstado = async () => {
             COUNT(DISTINCT a.idEquipo) AS cantidad_equipos,
             COUNT(DISTINCT a.idComercio) AS cantidad_comercios,
             COUNT(a.id) as total_registros
-            FROM Estados e
-            LEFT JOIN Asignacions a ON e.id = a.idEstado
+            FROM estados e
+            LEFT JOIN asignacions a ON e.id = a.idEstado
             WHERE DATE(a.updatedAt) = CURRENT_DATE()
             GROUP BY e.id, e.nombre
             ORDER BY e.id;
@@ -135,7 +135,7 @@ const getCantidadEquiposPorEstado = async () => {
             ELSE 'No definido'
             END AS estado,
             COUNT(*) AS cantidad
-            FROM Equipos
+            FROM equipos
             GROUP BY estado
             ORDER BY estado DESC;
         `;
