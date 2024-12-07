@@ -6,11 +6,17 @@ const { sequelize, QueryTypes } = require('../models')
 const getSparklineInstalaciones = async () => {
     try {
         const query = `
-            SELECT DATE(updatedAt) AS fecha, COUNT(id) AS cantidad
-            FROM asignacions
-            WHERE idServicio IN (1, 2) AND idEstado = 4 AND DATE(updatedAt) = '2024-12-04'
-            GROUP BY DATE(updatedAt)
-            ORDER BY fecha;
+            SELECT DATE(updatedAt) AS fecha, 
+            COUNT(DISTINCT idComercio) AS cantidad
+            FROM asignacions 
+            WHERE
+                idServicio IN (7, 8) 
+                AND idEstado = 4 
+                AND DATE(updatedAt) = CURRENT_DATE()
+            GROUP BY
+                DATE(updatedAt) 
+            ORDER BY
+                fecha
         `;
         const [results, metadata] = await sequelize.query(query);
         return results;
@@ -23,9 +29,12 @@ const getSparklineInstalaciones = async () => {
 const getSparklineSoportes = async () => {
     try {
         const query = `
-            SELECT DATE(updatedAt) AS fecha, COUNT(id) AS cantidad
+            SELECT DATE(updatedAt) AS fecha, 
+            COUNT(DISTINCT idComercio) AS cantidad
             FROM asignacions
-            WHERE idServicio IN (3, 4) AND idEstado = 3 AND DATE(updatedAt) = '2024-11-05'
+            WHERE idServicio IN (9, 10) 
+                AND idEstado = 4 
+                AND DATE(updatedAt) = CURRENT_DATE()
             GROUP BY DATE(updatedAt)
             ORDER BY fecha;
         `;
@@ -40,9 +49,10 @@ const getSparklineSoportes = async () => {
 const getSparklineRetiros = async () => {
     try {
         const query = `
-            SELECT DATE(updatedAt) AS fecha, COUNT(id) AS cantidad
+            SELECT DATE(updatedAt) AS fecha,
+            COUNT(DISTINCT idComercio) AS cantidad
             FROM asignacions
-            WHERE idServicio IN (5, 6) AND idEstado = 3 AND DATE(updatedAt) = '2024-11-05'
+            WHERE idServicio IN (11, 12) AND idEstado = 4 AND DATE(updatedAt) = CURRENT_DATE()
             GROUP BY DATE(updatedAt)
             ORDER BY fecha;
         `;
@@ -57,13 +67,14 @@ const getSparklineRetiros = async () => {
 const getServiciosPorCiudad = async () => {
     try {
         const query = `
-            SELECT c.nombre, s.nombre AS servicio, COUNT(a.id) AS cantidad
+            SELECT c.nombre, s.nombre AS servicio, COUNT(DISTINCT a.idComercio) AS cantidad
             FROM Asignacions a
             LEFT JOIN Servicios s ON a.idServicio = s.id
             LEFT JOIN Comercios co ON a.idComercio = co.id
             LEFT JOIN Ciudads c ON co.idCiudad = c.id
             WHERE a.idEstado = 4
-            GROUP BY c.nombre, s.nombre;
+            GROUP BY c.nombre, s.nombre
+            ORDER BY c.nombre, s.nombre;
         `;
         const [results, metadata] = await sequelize.query(query);
         return results;
@@ -76,9 +87,13 @@ const getServiciosPorCiudad = async () => {
 const getAsignacionesPorEstado = async () => {
     try {
         const query = `
-            SELECT idEstado, COUNT(id) AS cantidad
-            FROM asignacions
-            GROUP BY idEstado;
+            SELECT 
+            e.nombre AS estado,
+            COUNT(DISTINCT a.idComercio) AS cantidad
+            FROM asignacions a
+            LEFT JOIN Estados e ON a.idEstado = e.id
+            GROUP BY a.idEstado, e.nombre
+            ORDER BY e.nombre;
         `;
         const [results, metadata] = await sequelize.query(query);
         return results;
@@ -92,16 +107,15 @@ const getCrecimientoEquiposPorEstado = async () => {
     try {
         const query = `
             SELECT 
-                CASE 
-                    WHEN a.idEstado = 1 THEN 'Instalado'
-                    WHEN a.idEstado = 2 THEN 'Soporte Técnico'
-                    WHEN a.idEstado = 3 THEN 'Retirado'
-                    ELSE 'Otro'
-                END AS estado,
-                COUNT(e.id) AS cantidad
-            FROM Equipos e
-            INNER JOIN Asignacions a ON e.id = a.idEquipo
-            GROUP BY a.idEstado;
+            e.nombre AS estado,
+            COUNT(DISTINCT a.idEquipo) AS cantidad_equipos,
+            COUNT(DISTINCT a.idComercio) AS cantidad_comercios,
+            COUNT(a.id) as total_registros
+            FROM Estados e
+            LEFT JOIN Asignacions a ON e.id = a.idEstado
+            WHERE DATE(a.updatedAt) = CURRENT_DATE()
+            GROUP BY e.id, e.nombre
+            ORDER BY e.id;
         `;
         const [results, metadata] = await sequelize.query(query);
         return results;
@@ -114,9 +128,16 @@ const getCrecimientoEquiposPorEstado = async () => {
 const getCantidadEquiposPorEstado = async () => {
     try {
         const query = `
-            SELECT estado, COUNT(*) AS cantidad
+           SELECT 
+            CASE estado
+            WHEN 1 THEN 'Buen estado'
+            WHEN 0 THEN 'Dañado'
+            ELSE 'No definido'
+            END AS estado,
+            COUNT(*) AS cantidad
             FROM Equipos
-            GROUP BY estado;
+            GROUP BY estado
+            ORDER BY estado DESC;
         `;
         const [results, metadata] = await sequelize.query(query);
         return results;
