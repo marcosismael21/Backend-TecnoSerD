@@ -12,6 +12,5 @@ router.post('/', [verifyToken, tipoEquipoValidationRules(), validate], tipoEquip
 router.put('/:id', [verifyToken, tipoEquipoValidationRules(), validate], tipoEquipoController.updateTipoEquipo)
 router.delete('/:id', verifyToken, tipoEquipoController.deleteTipoEquipo)
 
-//la exportacion
 
 module.exports = router
