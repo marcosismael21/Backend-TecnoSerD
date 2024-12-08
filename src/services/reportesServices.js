@@ -72,6 +72,15 @@ const getAllAsignacionEsperaByCiudadServicioFinalizada = async (idCiudad, idServ
     }
 }
 
+const getAllEquiposMalEstadobyFechaInicialFechaFinal = async (fechaInicial, fechaFinal) => {
+    try {
+        const reportes = await reportesRepository.getAllEquiposMalEstadobyFechaInicialFechaFinal(fechaInicial, fechaFinal)
+        return (reportes) ? reportes : []
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllAsignacionEspera,
     getAllAsignacionEsperaByCiudad,
@@ -81,4 +90,5 @@ module.exports = {
     getAllAsignacionEsperaByCiudadFinalizada,
     getAllAsignacionEsperaByServicioFinalizada,
     getAllAsignacionEsperaByCiudadServicioFinalizada,
+    getAllEquiposMalEstadobyFechaInicialFechaFinal,
 }

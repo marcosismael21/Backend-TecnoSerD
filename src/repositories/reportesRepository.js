@@ -611,6 +611,82 @@ const getAllAsignacionEsperaByCiudadServicioFinalizada = async (idCiudad, idServ
     }
 }
 
+const getAllEquiposMalEstadobyFechaInicialFechaFinal = async (fechaInicial, fechaFinal) => {
+    try {
+        const sql = `
+            SELECT
+    co.id AS idComercio,
+    co.nombreComercio,
+    co.direccion,
+    co.numTienda,
+    co.nombreContacto,
+    co.numUsuario,
+    ciu.nombre AS ciudad,
+    tc.nombre AS tipoComercio,
+    GROUP_CONCAT(
+        DISTINCT
+        CASE WHEN eq.estado = 1 THEN 
+            CASE 
+                WHEN ti.id IN (9, 10) THEN CONCAT(ti.nombre, ' (PIN:', eq.pin, ' PUK:', eq.puk, ')')
+                WHEN ti.id IN (3, 4) THEN CONCAT(ti.nombre, ' (Serie:', eq.noserie, ' IMEI:', eq.noimei, ')')
+                ELSE CONCAT(ti.nombre, ' (Serie:', eq.noserie, ')')
+            END
+        END
+        SEPARATOR ', '
+    ) AS equipos_buen_estado,
+    COUNT(DISTINCT CASE WHEN eq.estado = 1 THEN eq.id END) AS total_buen_estado,
+    GROUP_CONCAT(
+        DISTINCT
+        CASE WHEN eq.estado = 0 THEN 
+            CASE 
+                WHEN ti.id IN (9, 10) THEN CONCAT(ti.nombre, ' (PIN:', eq.pin, ' PUK:', eq.puk, ')')
+                WHEN ti.id IN (3, 4) THEN CONCAT(ti.nombre, ' (Serie:', eq.noserie, ' IMEI:', eq.noimei, ')')
+                ELSE CONCAT(ti.nombre, ' (Serie:', eq.noserie, ')')
+            END
+        END
+        SEPARATOR ', '
+    ) AS equipos_danados,
+    COUNT(DISTINCT CASE WHEN eq.estado = 0 THEN eq.id END) AS total_danados,
+    DATE(asig.updatedAt) as fecha_actualizacion
+FROM 
+    comercios co
+    LEFT JOIN asignacions asig ON asig.idComercio = co.id
+    LEFT JOIN equipos eq ON eq.id = asig.idEquipo
+    LEFT JOIN tipoequipos ti ON ti.id = eq.idTipoEquipo
+    LEFT JOIN ciudads ciu ON ciu.id = co.idCiudad
+    LEFT JOIN tipocomercios tc ON tc.id = co.idTipoComercio
+WHERE 
+    asig.idEstado = 4
+    AND DATE(asig.updatedAt) BETWEEN :xfechaInicial AND :xfechaFinal
+GROUP BY 
+    co.id,
+    co.nombreComercio,
+    co.direccion,
+    co.numTienda,
+    co.nombreContacto,
+    co.numUsuario,
+    ciu.nombre,
+    tc.nombre,
+    DATE(asig.updatedAt)
+HAVING 
+    total_danados > 0  -- Solo comercios que tienen equipos dañados
+ORDER BY 
+    co.nombreComercio,
+    fecha_actualizacion;`
+				
+        const reportes = await sequelize.query(sql, {
+            replacements: {
+                xfechaInicial: fechaInicial,
+                xfechaFinal: fechaFinal
+            },
+            type: QueryTypes.SELECT
+        })
+        return reportes
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     getAllAsignacionEspera,
 	getAllAsignacionEsperaByCiudad,
@@ -620,4 +696,5 @@ module.exports = {
 	getAllAsignacionEsperaByCiudadFinalizada,
 	getAllAsignacionEsperaByServicioFinalizada,
 	getAllAsignacionEsperaByCiudadServicioFinalizada,
+	getAllEquiposMalEstadobyFechaInicialFechaFinal,
 }

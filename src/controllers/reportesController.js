@@ -80,6 +80,17 @@ const getAllAsignacionEsperaByCiudadServicioFinalizada = async (req, res, next) 
     }
 }
 
+const getAllEquiposMalEstadobyFechaInicialFechaFinal = async (req, res, next) => {
+    const fechaInicial = req.params.fechaInicial
+    const fechaFinal = req.params.fechaFinal
+    try {
+        const reportes = await reportesServices.getAllEquiposMalEstadobyFechaInicialFechaFinal(fechaInicial, fechaFinal)
+        return res.status(200).json(reportes)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllAsignacionEspera,
     getAllAsignacionEsperaByCiudad,
@@ -89,4 +100,5 @@ module.exports = {
     getAllAsignacionEsperaByCiudadFinalizada,
     getAllAsignacionEsperaByServicioFinalizada,
     getAllAsignacionEsperaByCiudadServicioFinalizada,
+    getAllEquiposMalEstadobyFechaInicialFechaFinal,
 }

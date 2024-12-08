@@ -15,4 +15,8 @@ router.get('/asig-finalizado/:idCiudad', verifyToken, reportesController.getAllA
 router.get('/asig-finalizado-servicio/:idServicio', verifyToken, reportesController.getAllAsignacionEsperaByServicioFinalizada)
 router.get('/asig-finalizado/:idCiudad/:idServicio', verifyToken, reportesController.getAllAsignacionEsperaByCiudadServicioFinalizada)
 
+
+// reporte de equipos dañados
+router.get('/equipo-mal-estado/:fechaInicial/:fechaFinal', verifyToken, reportesController.getAllEquiposMalEstadobyFechaInicialFechaFinal)
+
 module.exports = router
