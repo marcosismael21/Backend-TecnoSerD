@@ -3,15 +3,15 @@ const Comercio = db.Comercio
 const Equipo = db.Equipo
 const Asignacion = db.Asignacion
 
-const createComercioConEquiposYAsignacion = async (comercioData, equipos, TipoProblema, idServicio) => {
+const createComercioConEquiposYAsignacion = async (comercioData, equipos, TipoProblema, idServicio, interpretacion = '') => {
     const transaction = await db.sequelize.transaction();
     try {
         const comercio = await Comercio.create(comercioData, { transaction });
-        
+
         for (let equipoData of equipos) {
             let equipo;
             const existingEquipo = await getEquiposByDetails(equipoData);
-            
+
             if (existingEquipo) {
                 equipo = existingEquipo;
             } else {
@@ -32,10 +32,11 @@ const createComercioConEquiposYAsignacion = async (comercioData, equipos, TipoPr
                 idEquipo: equipo.id,
                 idEstado: 1,
                 tipoProblema: TipoProblema,
+                interpretacion: interpretacion,
                 idServicio: idServicio
             }, { transaction });
         }
-        
+
         await transaction.commit();
     } catch (error) {
         await transaction.rollback();
@@ -43,13 +44,13 @@ const createComercioConEquiposYAsignacion = async (comercioData, equipos, TipoPr
     }
 };
 
-const createComercioConEquiposYAsignacionById = async (comercioId, equipos, TipoProblema, idServicio) => {
+const createComercioConEquiposYAsignacionById = async (comercioId, equipos, TipoProblema, idServicio, interpretacion = '') => {
     const transaction = await db.sequelize.transaction();
     try {
         for (let equipoData of equipos) {
             let equipo;
             const existingEquipo = await getEquiposByDetails(equipoData);
-            
+
             if (existingEquipo) {
                 equipo = existingEquipo;
             } else {
@@ -70,10 +71,11 @@ const createComercioConEquiposYAsignacionById = async (comercioId, equipos, Tipo
                 idEquipo: equipo.id,
                 idEstado: 1,
                 tipoProblema: TipoProblema,
+                interpretacion: interpretacion,
                 idServicio: idServicio
             }, { transaction });
         }
-        
+
         await transaction.commit();
     } catch (error) {
         await transaction.rollback();
@@ -126,5 +128,5 @@ module.exports = {
     createComercioConEquiposYAsignacion,
     createComercioConEquiposYAsignacionById,
     createEquipos,
-    getEquiposByDetails,
+    getEquiposByDetails
 }

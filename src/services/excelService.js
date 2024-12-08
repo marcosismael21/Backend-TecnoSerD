@@ -32,7 +32,7 @@ const formatLargeNumber = (value) => {
     return strValue;
 }
 
-const importExcelDataUnificado = async (buffer) => {
+const importExcelDataUnificado = async (buffer, interpretaciones = []) => {
     try {
         const workbook = xlsx.read(buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
@@ -42,7 +42,12 @@ const importExcelDataUnificado = async (buffer) => {
         const fechaActual = new Date();
         const processedComercios = {};
 
-        for (let row of excelData) {
+        const getInterpretacion = (index) => {
+            const interpretacion = interpretaciones.find(i => i.rowIndex === index + 1);
+            return interpretacion ? interpretacion.interpretacion : '';
+        };
+
+        for (let [index, row] of excelData.entries()) {
             const ciudad = await Ciudad.findOne({
                 where: {
                     nombre: row['CIUDAD'].trim(),
@@ -135,7 +140,6 @@ const importExcelDataUnificado = async (buffer) => {
                         }
                     });
 
-                    // Formatear el número serie según el tipo de equipo
                     let noserie;
                     if (tipo.nombre === 'QPOS') {
                         noserie = formatLargeNumber(valorOriginal);
@@ -206,6 +210,7 @@ const importExcelDataUnificado = async (buffer) => {
             }
 
             const TipoProblemaData = row['Tipo de Problema'] ? row['Tipo de Problema'] : '';
+            const interpretacionData = getInterpretacion(index);
 
             const comercioKey = `${comercioData.nombreComercio}-${servicio.id}`;
             if (processedComercios[comercioKey]) {
@@ -219,9 +224,21 @@ const importExcelDataUnificado = async (buffer) => {
                 processedComercios[comercioKey] = true;
                 let comercioId = await excelRepository.getComercioExistente(comercioData.rtn, comercioData.nombreComercio);
                 if (!comercioId) {
-                    await excelRepository.createComercioConEquiposYAsignacion(comercioData, equipos, TipoProblemaData, servicio.id);
+                    await excelRepository.createComercioConEquiposYAsignacion(
+                        comercioData,
+                        equipos,
+                        TipoProblemaData,
+                        servicio.id,
+                        interpretacionData
+                    );
                 } else {
-                    await excelRepository.createComercioConEquiposYAsignacionById(comercioId.id, equipos, TipoProblemaData, servicio.id);
+                    await excelRepository.createComercioConEquiposYAsignacionById(
+                        comercioId.id,
+                        equipos,
+                        TipoProblemaData,
+                        servicio.id,
+                        interpretacionData
+                    );
                 }
             }
         }

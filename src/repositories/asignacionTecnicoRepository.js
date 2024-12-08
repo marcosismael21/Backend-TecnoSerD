@@ -243,9 +243,9 @@ const getAllByTecnicoComercioEstadoServicio = async (idUsuario, idComercio, idEs
     try {
         const sql = `
             SELECT
-                at.idUsuario,
+                AT.idUsuario,
                 u.nombres AS tecnico,
-                GROUP_CONCAT(at.idAsignacion SEPARATOR ', ') AS listAsignacionId,
+                GROUP_CONCAT(AT.idAsignacion SEPARATOR ', ') AS listAsignacionId,
                 co.id AS idComercio,
                 co.nombreComercio AS nomComercio,
                 co.longitud,
@@ -262,24 +262,24 @@ const getAllByTecnicoComercioEstadoServicio = async (idUsuario, idComercio, idEs
                 GROUP_CONCAT( eq.id SEPARATOR ', ' ) AS listEquiposIDs,
                 GROUP_CONCAT(ti.nombre SEPARATOR ', ') AS listEquipos
             FROM
-                asignaciontecnicos AS at
-                LEFT JOIN asignacions AS asig ON asig.id = at.idAsignacion
+                asignaciontecnicos AS AT
+                LEFT JOIN asignacions AS asig ON asig.id = AT.idAsignacion
                 LEFT JOIN comercios AS co ON co.id = asig.idComercio
                 LEFT JOIN ciudads AS ciu ON ciu.id = co.idCiudad
                 LEFT JOIN servicios AS se ON se.id = asig.idServicio
-                LEFT JOIN estados AS es ON es.id = at.idEstado
+                LEFT JOIN estados AS es ON es.id = AT.idEstado
                 LEFT JOIN canals AS ca ON ca.id = se.idcanal
-                LEFT JOIN usuarios AS u ON u.id = at.idUsuario
+                LEFT JOIN usuarios AS u ON u.id = AT.idUsuario
                 LEFT JOIN equipos AS eq ON eq.id = asig.idEquipo
                 LEFT JOIN tipoequipos AS ti ON ti.id = eq.idTipoEquipo
             WHERE
-                at.idEstado = asig.idEstado
-                AND at.idUsuario = :xusuario
+                AT.idEstado = asig.idEstado
+                AND AT.idUsuario = :xusuario
                 AND co.id = :xcomercio
                 AND se.id = :xservicio
                 AND es.id = :xestado
             GROUP BY
-                at.idUsuario,
+                AT.idUsuario,
                 u.nombres,
                 co.id,
                 co.nombreComercio,
@@ -527,8 +527,8 @@ const getAllByTecnicoComercioEstadoServicioDetalle = async (idUsuario, idComerci
             LEFT JOIN equipos AS eq ON eq.id = asig.idEquipo
             LEFT JOIN tipoequipos AS ti ON ti.id = eq.idTipoEquipo 
             WHERE
-                at.idEstado = asig.idEstado
-                AND at.idUsuario = :xusuario
+                AT.idEstado = asig.idEstado
+                AND AT.idUsuario = :xusuario
                 AND co.id = :xcomercio
                 AND se.id = :xservicio
                 AND es.id = :xestado
