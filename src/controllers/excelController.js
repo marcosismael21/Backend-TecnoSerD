@@ -8,8 +8,9 @@ const importarExcel = async (req, res) => {
             return res.status(400).json({ message: 'No se ha subido ningún archivo.' });
         }
 
-        // Llamar al servicio para procesar el archivo Excel
-        await excelService.importExcelDataUnificado(req.file.buffer);
+        const interpretaciones = req.body.interpretaciones ? JSON.parse(req.body.interpretaciones) : [];
+
+        await excelService.importExcelDataUnificado(req.file.buffer, interpretaciones);;
 
         return res.status(200).json({ message: 'Datos importados correctamente desde el archivo Excel.' });
     } catch (error) {
